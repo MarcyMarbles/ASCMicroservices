@@ -4,10 +4,13 @@ import jakarta.persistence.Entity;
 import kz.saya.sbasecore.Entity.FileDescriptor;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class GamerProfile extends MappedSuperClass {
     private String nickname; // Никнейм игрока
