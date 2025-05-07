@@ -36,17 +36,15 @@ public class Team extends MappedSuperClass {
     @Column(name = "creator_id", nullable = false)
     private UUID creatorId;
 
-    @Column(name = "captain_id", nullable = true)
+    @Column(name = "captain_id")
     private UUID captainId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status = Status.ACTIVE;
 
-    @ElementCollection
-    @CollectionTable(name = "team_members", joinColumns = @JoinColumn(name = "team_id"))
-    @Column(name = "member_id")
-    private List<UUID> members = new ArrayList<>();
-
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamMember> members = new ArrayList<>();
 }
+
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class GamerProfileService {
@@ -23,5 +24,9 @@ public class GamerProfileService {
     ) {
         GamerProfile gamerProfile = GamerProfileMapper.toEntity(gamerProfileDto);
         return gamerProfileRepository.save(gamerProfile);
+    }
+
+    public GamerProfile getByUserId(UUID userId) {
+        return gamerProfileRepository.findGamerProfileByUserId(userId);
     }
 }

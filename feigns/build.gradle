@@ -24,6 +24,7 @@ ext {
 
 dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'kz.saya:sBase-core:0.0.1-SNAPSHOT'
     implementation project(':common')
 }
 

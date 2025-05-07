@@ -1,15 +1,12 @@
-package kz.saya.finals.common.Enums;
+package kz.saya.finals.teamservice.Enums;
 
-public enum Status {
-    ACTIVE("IN PROGRESS"),
-    END("FINISHED"),
-    CANCEL("CANCELED"),
-    PENDING("PENDING"),
-    INACTIVE("INACTIVE");
-
+public enum RequestStatus {
+    ACCEPTED("ACCEPTED"),
+    REJECTED("REJECTED"),
+    PENDING("PENDING");
     private final String status;
 
-    Status(String status) {
+    RequestStatus(String status) {
         this.status = status;
     }
 
@@ -17,8 +14,8 @@ public enum Status {
         return status;
     }
 
-    public static Status fromString(String status) {
-        for (Status s : Status.values()) {
+    public static RequestStatus fromString(String status) {
+        for (RequestStatus s : RequestStatus.values()) {
             if (s.status.equalsIgnoreCase(status)) {
                 return s;
             }
@@ -26,8 +23,8 @@ public enum Status {
         throw new IllegalArgumentException("No constant with text " + status + " found");
     }
 
-    public static Status fromStringIgnoreCase(String status) {
-        for (Status s : Status.values()) {
+    public static RequestStatus fromStringIgnoreCase(String status) {
+        for (RequestStatus s : RequestStatus.values()) {
             if (s.status.equalsIgnoreCase(status)) {
                 return s;
             }
@@ -35,8 +32,8 @@ public enum Status {
         throw new IllegalArgumentException("No constant with text " + status + " found");
     }
 
-    public static Status fromStringIgnoreCaseOrNull(String status) {
-        for (Status s : Status.values()) {
+    public static RequestStatus fromStringIgnoreCaseOrNull(String status) {
+        for (RequestStatus s : RequestStatus.values()) {
             if (s.status.equalsIgnoreCase(status)) {
                 return s;
             }
