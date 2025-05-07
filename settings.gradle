@@ -1,0 +1,2 @@
+rootProject.name = 'ASCMicroservices'
+include 'user-service', 'auth-service', 'common', 'feigns', 'gamer-profile-service'
