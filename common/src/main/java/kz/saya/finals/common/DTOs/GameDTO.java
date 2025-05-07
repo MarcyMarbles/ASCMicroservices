@@ -7,7 +7,7 @@ public class GameDTO {
     private String name;
     private String description;
     private String genre;
-    private String imageUrl;
+    private byte[] imageData;
     private String officialSite;
 
     public UUID getId() {
@@ -42,19 +42,19 @@ public class GameDTO {
         this.genre = genre;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     public String getOfficialSite() {
         return officialSite;
     }
 
     public void setOfficialSite(String officialSite) {
         this.officialSite = officialSite;
+    }
+
+    public byte[] getImageData() {
+        return imageData;
+    }
+
+    public void setImageData(byte[] imageData) {
+        this.imageData = imageData;
     }
 }

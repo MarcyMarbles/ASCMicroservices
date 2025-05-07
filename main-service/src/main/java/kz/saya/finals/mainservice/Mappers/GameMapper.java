@@ -2,6 +2,7 @@ package kz.saya.finals.mainservice.Mappers;
 
 import kz.saya.finals.common.DTOs.GameDTO;
 import kz.saya.finals.mainservice.Entities.Game;
+import kz.saya.sbasecore.Entity.FileDescriptor;
 
 public class GameMapper {
 
@@ -11,8 +12,8 @@ public class GameMapper {
         dto.setId(game.getId());
         dto.setName(game.getName());
         dto.setDescription(game.getDescription());
+        dto.setImageData(game.getImage().getFileData());
         dto.setGenre(game.getGenre());
-        dto.setImageUrl(game.getImageUrl());
         dto.setOfficialSite(game.getOfficialSite());
         return dto;
     }
@@ -24,7 +25,11 @@ public class GameMapper {
         game.setName(dto.getName());
         game.setDescription(dto.getDescription());
         game.setGenre(dto.getGenre());
-        game.setImageUrl(dto.getImageUrl());
+        if (dto.getImageData() != null) {
+            FileDescriptor fileDescriptor = new FileDescriptor();
+            fileDescriptor.setFileData(dto.getImageData());
+            game.setImage(fileDescriptor);
+        }
         game.setOfficialSite(dto.getOfficialSite());
         return game;
     }

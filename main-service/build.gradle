@@ -18,8 +18,17 @@ configurations {
         extendsFrom annotationProcessor
     }
 }
+ext {
+    springCloudVersion = "2024.0.1"
+}
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+    }
+}
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -28,14 +37,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
+    implementation 'kz.saya:sBase-core:0.0.1-SNAPSHOT'
+    implementation 'kz.saya:sBase-security:0.0.1-SNAPSHOT'
+    implementation project(':common')
+    implementation project(':feigns')
 }

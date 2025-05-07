@@ -4,7 +4,7 @@ public class GameCreateDTO {
     private String name;
     private String description;
     private String genre;
-    private String imageUrl;
+    private byte[] image;
     private String officialSite;
 
     public String getName() {
@@ -31,12 +31,12 @@ public class GameCreateDTO {
         this.genre = genre;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public byte[] getImage() {
+        return image;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
     public String getOfficialSite() {

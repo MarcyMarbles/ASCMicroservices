@@ -1,8 +1,7 @@
 package kz.saya.finals.mainservice.Entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import kz.saya.sbasecore.Entity.FileDescriptor;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +19,9 @@ public class Game extends MappedSuperClass {
 
     private String genre; // "MOBA", "Shooter", "Battle Royale"
 
-    private String imageUrl; // логотип или постер игры
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private FileDescriptor image;
 
     private String officialSite; // если хочешь
 

@@ -3,6 +3,7 @@ package kz.saya.finals.mainservice.Services;
 import kz.saya.finals.common.DTOs.GameCreateDTO;
 import kz.saya.finals.mainservice.Entities.Game;
 import kz.saya.finals.mainservice.Repositories.GameRepository;
+import kz.saya.sbasecore.Entity.FileDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,11 @@ public class GameService {
         newGame.setName(game.getName());
         newGame.setDescription(game.getDescription());
         newGame.setGenre(game.getGenre());
-        newGame.setImageUrl(game.getImageUrl());
+        if (game.getImage() != null) {
+            FileDescriptor fileDescriptor = new FileDescriptor();
+            fileDescriptor.setFileData(game.getImage());
+            newGame.setImage(fileDescriptor);
+        }
         newGame.setOfficialSite(game.getOfficialSite());
         saveGame(newGame);
     }
