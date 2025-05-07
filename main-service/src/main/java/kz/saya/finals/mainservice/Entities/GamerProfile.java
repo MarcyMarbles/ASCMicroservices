@@ -1,6 +1,6 @@
 package kz.saya.finals.mainservice.Entities;
 
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import kz.saya.sbasecore.Entity.FileDescriptor;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
 import lombok.Data;
@@ -16,8 +16,15 @@ public class GamerProfile extends MappedSuperClass {
     private String nickname; // Никнейм игрока
     private String steamId; // Steam ID игрока
     private String discordName;
-    private FileDescriptor avatar; // Аватар игрока
-    private FileDescriptor background; // Фоновое изображение профиля (ПЛАТНО)
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "avatar_id")
+    private FileDescriptor avatar;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "background_id")
+    private FileDescriptor background;
+
     private String description; // Описание профиля
     private String region; // Регион игрока (например, "EU", "NA", "ASIA")
     private UUID userId; // ID пользователя, которому принадлежит профиль

@@ -1,8 +1,10 @@
 package kz.saya.finals.scrimservice.Service;
 
+import kz.saya.finals.common.DTOs.GamerProfileDto;
 import kz.saya.finals.common.DTOs.ScrimDto;
 import kz.saya.finals.common.DTOs.ScrimRequestDto;
 import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
 import kz.saya.finals.scrimservice.Entities.Scrim;
 import kz.saya.finals.scrimservice.Entities.ScrimResults;
@@ -30,12 +32,15 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class ScrimService {
     private final ScrimRepository scrimRepository;
     private final UserServiceClient userServiceClient;
+    private final GamerProfileServiceClient gamerProfileServiceClient;
 
     @Autowired
     public ScrimService(ScrimRepository scrimRepository,
-                        UserServiceClient userServiceClient) {
+                        UserServiceClient userServiceClient,
+                        GamerProfileServiceClient gamerProfileServiceClient) {
         this.scrimRepository = scrimRepository;
         this.userServiceClient = userServiceClient;
+        this.gamerProfileServiceClient = gamerProfileServiceClient;
     }
 
     public ScrimDto createScrim(ScrimRequestDto dto) {
@@ -44,15 +49,18 @@ public class ScrimService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         String login = auth.getName();
-        UserDTO user = userServiceClient.getByLogin(login);
+        GamerProfileDto gamerProfile = gamerProfileServiceClient.getProfileByLogin(login);
+        if (gamerProfile == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gamer profile not found");
+        }
 
         Scrim scrim = new Scrim();
         scrim.setName(dto.getName());
         scrim.setGameId(dto.getGameId());
         scrim.setScrimType(dto.getScrimType());
         scrim.setPrivate(dto.isPrivate());
-        scrim.setCreatorId(user.getId());
-        scrim.setCreatorName(user.getUsername());
+        scrim.setCreatorId(gamerProfile.getId());
+        scrim.setCreatorName(gamerProfile.getNickname());
 
         Scrim saved = scrimRepository.save(scrim);
         return mapToDto(saved);

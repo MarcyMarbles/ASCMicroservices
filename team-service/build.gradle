@@ -41,5 +41,7 @@ dependencies {
     implementation project(':common')
     implementation project(':feigns')
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
 }
 

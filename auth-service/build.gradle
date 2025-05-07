@@ -44,4 +44,5 @@ dependencies {
     implementation project(':feigns')
     implementation 'kz.saya:sBase-core:0.0.1-SNAPSHOT'
     implementation 'kz.saya:sBase-security:0.0.1-SNAPSHOT'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 }

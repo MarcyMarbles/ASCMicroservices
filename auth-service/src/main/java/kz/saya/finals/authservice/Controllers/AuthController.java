@@ -1,6 +1,6 @@
 package kz.saya.finals.authservice.Controllers;
 
-import kz.saya.finals.authservice.Service.JwtUtils;
+import kz.saya.finals.authservice.Service.JwtUtility;
 import kz.saya.finals.common.DTOs.AuthRequestDTO;
 import kz.saya.finals.common.DTOs.RegisterRequestDTO;
 import kz.saya.finals.common.DTOs.UserDTO;
@@ -18,11 +18,11 @@ public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
     private final UserServiceClient userServiceClient;
-    private final JwtUtils jwtUtils;
+    private final JwtUtility jwtUtils;
 
     public AuthController(PasswordEncoder passwordEncoder,
                           UserServiceClient userServiceClient,
-                          JwtUtils jwtUtils) {
+                          JwtUtility jwtUtils) {
         this.passwordEncoder = passwordEncoder;
         this.userServiceClient = userServiceClient;
         this.jwtUtils = jwtUtils;

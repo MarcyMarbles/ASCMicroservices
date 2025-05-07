@@ -5,4 +5,6 @@ include 'user-service',
         'feigns',
         'main-service',
         'scrim-service',
-        'team-service';
+        'team-service',
+        'eureka-server',
+        'api-gateway';
