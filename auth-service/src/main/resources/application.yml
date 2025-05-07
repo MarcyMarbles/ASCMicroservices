@@ -26,5 +26,5 @@ eureka:
     prefer-ip-address: true
 
 jwt:
-  secret: SGVsbG9KV1RTZWNyZXQxMjMhIQ==
+  secret: Y7o3bAz+2zkC6upMEW3vW3NKtWIz7AAV75Op5CDmV2o=
   expirationMs: 36000000
