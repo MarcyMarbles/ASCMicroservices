@@ -1,2 +1,8 @@
 rootProject.name = 'ASCMicroservices'
-include 'user-service', 'auth-service', 'common', 'feigns', 'main-service'
+include 'user-service',
+        'auth-service',
+        'common',
+        'feigns',
+        'main-service',
+        'scrim-service',
+        'team-service';
