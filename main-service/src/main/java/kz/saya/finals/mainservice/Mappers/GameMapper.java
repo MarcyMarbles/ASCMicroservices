@@ -12,7 +12,9 @@ public class GameMapper {
         dto.setId(game.getId());
         dto.setName(game.getName());
         dto.setDescription(game.getDescription());
-        dto.setImageData(game.getImage().getFileData());
+        if (game.getImage() != null) {
+            dto.setImageData(game.getImage().getFileData());
+        }
         dto.setGenre(game.getGenre());
         dto.setOfficialSite(game.getOfficialSite());
         return dto;

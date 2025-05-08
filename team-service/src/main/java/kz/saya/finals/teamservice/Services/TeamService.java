@@ -37,6 +37,7 @@ public class TeamService {
         }
         Team team = new Team();
         team.setName(teamCreateDto.getName());
+        team.setTag(teamCreateDto.getTag());
         team.setDescription(teamCreateDto.getDescription());
         team.setCreatorId(teamCreateDto.getCreatorId());
         return teamRepository.save(team);

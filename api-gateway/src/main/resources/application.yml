@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  profiles:
+    active: api
   application:
     name: api-gateway
   cloud:
@@ -18,15 +20,15 @@ spring:
         - id: main-service
           uri: lb://main-service
           predicates:
-            - Path=/api/main/**
+            - Path=/api/files/**, /api/games/**, /api/gamer-profiles/**
         - id: scrim-service
           uri: lb://scrim-service
           predicates:
-            - Path=/api/scrim/**
+            - Path=/api/scrims/**
         - id: team-service
           uri: lb://team-service
           predicates:
-            - Path=/api/team/**
+            - Path=/api/teams/**
         - id: user-service
           uri: lb://user-service
           predicates:

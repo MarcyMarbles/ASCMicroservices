@@ -2,6 +2,8 @@ server:
   port: 8084
 
 spring:
+  profiles:
+    active: api
   application:
     name: scrim-service
   datasource:

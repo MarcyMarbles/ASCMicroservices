@@ -2,13 +2,14 @@ package kz.saya.finals.feigns.Clients;
 
 import kz.saya.finals.common.DTOs.RegisterRequestDTO;
 import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.sbasesecurity.Feigns.FeignAuthConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "user-service", url = "${user-service.url:http://localhost:8085}", path = "/api/user")
+@FeignClient(name = "user-service", path = "/api/user", configuration = FeignAuthConfig.class)
 public interface UserServiceClient {
     @GetMapping("/public/exists/{login}")
     Boolean userExists(@PathVariable("login") String login);

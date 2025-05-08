@@ -25,7 +25,7 @@ public class GamerProfileController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<GamerProfileDto> create(
+    public ResponseEntity<?> create(
             @RequestBody GamerProfileDto gamerProfileDto
     ) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -37,12 +37,15 @@ public class GamerProfileController {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+        if (gamerProfileService.getByUserId(user.getId()) != null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Profile already exists");
+        }
         gamerProfileDto.setUserId(user.getId());
         try {
             GamerProfile createdGamerProfile = gamerProfileService.createGamerProfile(gamerProfileDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(GamerProfileMapper.toDTO(createdGamerProfile));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
