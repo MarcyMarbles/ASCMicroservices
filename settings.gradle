@@ -7,4 +7,5 @@ include 'user-service',
         'scrim-service',
         'team-service',
         'eureka-server',
-        'api-gateway';
+        'api-gateway',
+        'tournament-service';

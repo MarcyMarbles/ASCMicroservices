@@ -29,4 +29,8 @@ public class GamerProfileService {
     public GamerProfile getByUserId(UUID userId) {
         return gamerProfileRepository.findGamerProfileByUserId(userId);
     }
+
+    public GamerProfile getById(UUID id) {
+        return gamerProfileRepository.findById(id).orElse(null);
+    }
 }

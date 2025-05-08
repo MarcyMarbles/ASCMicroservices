@@ -10,7 +10,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_MULTIPLE_DATABASES: auth_service_db,main_service_db,scrim_service_db,team_service_db,user_service_db
+      POSTGRES_MULTIPLE_DATABASES: auth_service_db,main_service_db,scrim_service_db,team_service_db,user_service_db, tournament_service_db
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
@@ -124,6 +124,23 @@ services:
     container_name: scrim-service
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/scrim_service_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+
+  tournament-service:
+    build: ./tournament-service
+    container_name: tournament-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/tournament_service_db
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/

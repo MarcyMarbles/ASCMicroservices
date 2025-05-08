@@ -12,6 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/gamer-profiles")
 public class GamerProfileController {
@@ -57,6 +59,16 @@ public class GamerProfileController {
         }
 
         GamerProfile profile = gamerProfileService.getByUserId(user.getId());
+        if (profile == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(GamerProfileMapper.toDTO(profile));
+    }
+
+    @GetMapping("/by-id")
+    public ResponseEntity<GamerProfileDto> getProfileById(@RequestParam UUID id) {
+        GamerProfile profile = gamerProfileService.getById(id);
         if (profile == null) {
             return ResponseEntity.notFound().build();
         }
