@@ -1,5 +1,6 @@
 package kz.saya.finals.mainservice.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import kz.saya.sbasecore.Entity.FileDescriptor;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
@@ -7,14 +8,15 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
 public class GamerProfile extends MappedSuperClass {
-    private String nickname; // Никнейм игрока
-    private String steamId; // Steam ID игрока
+    private String nickname;
+    private String steamId;
     private String discordName;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -25,7 +27,20 @@ public class GamerProfile extends MappedSuperClass {
     @JoinColumn(name = "background_id")
     private FileDescriptor background;
 
-    private String description; // Описание профиля
-    private String region; // Регион игрока (например, "EU", "NA", "ASIA")
-    private UUID userId; // ID пользователя, которому принадлежит профиль
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Region region;
+
+    private UUID userId;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "gamer_achievements",
+            joinColumns = @JoinColumn(name = "gamer_id"),
+            inverseJoinColumns = @JoinColumn(name = "achievement_id")
+    )
+    @JsonIgnore
+    private List<Achievement> achievements;
 }

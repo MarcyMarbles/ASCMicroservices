@@ -1,10 +1,13 @@
 package kz.saya.finals.mainservice.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import kz.saya.sbasecore.Entity.FileDescriptor;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,19 +15,18 @@ import lombok.Setter;
 @Table(name = "games") // множественное число в таблице — good practice
 public class Game extends MappedSuperClass {
     @Column(nullable = false, unique = true)
-    private String name; // Например, "Valorant", "CS2"
+    private String name;
 
     @Column(columnDefinition = "TEXT")
-    private String description; // Описание с Steam, IGDB и т.д.
+    private String description;
 
-    private String genre; // "MOBA", "Shooter", "Battle Royale"
+    private String genre;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private FileDescriptor image;
 
-    private String officialSite; // если хочешь
+    private String officialSite;
 
-    private boolean scrimEnabled = false; // Если игра в которой нельзя создавать кастомки, то будто бы и нельзя
-
+    private boolean scrimEnabled = false;
 }

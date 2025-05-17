@@ -3,6 +3,7 @@ package kz.saya.finals.mainservice.Controllers;
 import kz.saya.finals.common.DTOs.GamerProfileDto;
 import kz.saya.finals.common.DTOs.UserDTO;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
+import kz.saya.finals.mainservice.Entities.Achievement;
 import kz.saya.finals.mainservice.Entities.GamerProfile;
 import kz.saya.finals.mainservice.Mappers.GamerProfileMapper;
 import kz.saya.finals.mainservice.Services.GamerProfileService;
@@ -12,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -76,4 +78,29 @@ public class GamerProfileController {
         return ResponseEntity.ok(GamerProfileMapper.toDTO(profile));
     }
 
+    @GetMapping("/achievements")
+    public ResponseEntity<List<Achievement>> getAchievements() {
+        GamerProfile profile = getCurrentUserProfile();
+        if (profile == null) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Achievement> achievements = profile.getAchievements();
+        if (achievements == null || achievements.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(achievements);
+    }
+
+    private GamerProfile getCurrentUserProfile() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return null;
+        }
+        String login = auth.getName();
+        UserDTO user = userServiceClient.getByLogin(login);
+        if (user == null) {
+            return null;
+        }
+        return gamerProfileService.getByUserId(user.getId());
+    }
 }

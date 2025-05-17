@@ -19,7 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 @EntityScan(value = {
         "kz.saya.sbasecore.Entity",
         "kz.saya.finals.mainservice.Entities",
-        "kz.saya.finals.common.Entities",
+        "kz.saya.finals.common",
 })
 @EnableFeignClients(value = {
         "kz.saya.finals.feigns",

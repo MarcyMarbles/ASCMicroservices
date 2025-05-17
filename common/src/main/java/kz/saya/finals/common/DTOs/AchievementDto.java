@@ -1,25 +1,23 @@
 package kz.saya.finals.common.DTOs;
 
-import kz.saya.sbasecore.Entity.FileDescriptor;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.util.List;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class GamerProfileDto implements Serializable {
+public class AchievementDto implements Serializable {
     private UUID id;
-    private String nickname;
-    private String steamId;
-    private String discordName;
+    private String name;
     private String description;
-    private String region;
-    private UUID userId;
+    private int progress;
+    private byte[] iconFileData;
+    private UUID gameId;
 }
