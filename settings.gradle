@@ -8,4 +8,5 @@ include 'user-service',
         'team-service',
         'eureka-server',
         'api-gateway',
-        'tournament-service';
+        'tournament-service',
+        'notification-service';
