@@ -2,6 +2,7 @@ package kz.saya.finals.mainservice.Services;
 
 import kz.saya.finals.common.DTOs.Steam.*;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,7 +12,8 @@ import java.util.Map;
 @Service
 public class SteamService {
 
-    private String apiKey = "823C5B903DF12E4358FF3CB3CD5D38AA";
+    @Value("${steam.api.key}")
+    private String apiKey;
 
     private RestTemplate restTemplate = new RestTemplate();
 
