@@ -36,4 +36,16 @@ public class AdminController {
         return steamService.getUserAchievements(steamId, appId);
     }
 
+    @GetMapping("/steam/getUserFriends")
+    @PermitAll
+    public Object getUserFriends(@RequestParam String steamId, @RequestParam boolean includeDetails) {
+        return steamService.getUserFriends(steamId, includeDetails);
+    }
+
+    @GetMapping("/steam/getUserLevel")
+    @PermitAll
+    public Object getUserLevel(@RequestParam String steamId) {
+        return steamService.getUserLevel(steamId);
+    }
+
 }

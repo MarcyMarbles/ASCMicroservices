@@ -16,7 +16,6 @@ import java.util.UUID;
 @Entity
 public class GamerProfile extends MappedSuperClass {
     private String nickname;
-    private String steamId;
     private String discordName;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -43,4 +42,8 @@ public class GamerProfile extends MappedSuperClass {
     )
     @JsonIgnore
     private List<Achievement> achievements;
+
+    @OneToOne(mappedBy = "gamerProfile", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private SteamProfile steamProfile;
+
 }

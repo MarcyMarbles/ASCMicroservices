@@ -1,7 +1,6 @@
 package kz.saya.finals.mainservice.Services;
 
-import kz.saya.finals.common.DTOs.Steam.SteamOwnedGamesResponse;
-import kz.saya.finals.common.DTOs.Steam.SteamUserData;
+import kz.saya.finals.common.DTOs.Steam.*;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +22,6 @@ public class SteamService {
         );
         return restTemplate.getForObject(url, SteamUserData.class);
     }
-
 
     public String getSteamId(String steamURL) {
         if (steamURL.matches("https?://steamcommunity\\.com/profiles/(\\d{17})/?")) {
@@ -76,27 +74,63 @@ public class SteamService {
         return response;
     }
 
-    public Object getUserAchievements(String steamId, String appId) {
+    public SteamUserAchievementsResponse getUserAchievements(String steamId, String appId) {
         String url = String.format(
-                "https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?key=%s&steamid=%s&appid=%s&include_played_free_games=1",
+                "https://api.steampowered.com/ISteamUserStats/GetPlayerAchievements/v1/?key=%s&steamid=%s&appid=%s&include_played_free_games=1&l=1",
                 apiKey, steamId, appId
         );
-        return restTemplate.getForObject(url, Object.class);
+        try {
+            return restTemplate.getForObject(url, SteamUserAchievementsResponse.class);
+        } catch (Exception e) {
+            return new SteamUserAchievementsResponse();
+        }
     }
 
-    public Object getUserBadges(String steamId) {
+    public SteamLevelResponse getUserLevel(String steamId) {
         String url = String.format(
                 "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=%s&steamid=%s",
                 apiKey, steamId
         );
-        return restTemplate.getForObject(url, Object.class);
+        return restTemplate.getForObject(url, SteamLevelResponse.class);
     }
 
-    public Object getUserLevel(String steamId) {
+    public SteamFriendsListResponse getUserFriends(String steamId, boolean includeDetails) {
         String url = String.format(
-                "https://api.steampowered.com/IPlayerService/GetBadges/v1/?key=%s&steamid=%s",
+                "https://api.steampowered.com/ISteamUser/GetFriendList/v1/?key=%s&steamid=%s&relationship=friend",
                 apiKey, steamId
         );
-        return restTemplate.getForObject(url, Object.class);
+        SteamFriendsListResponse response = restTemplate.getForObject(url, SteamFriendsListResponse.class);
+        if (response == null || response.getFriendslist() == null) {
+            return null;
+        }
+        if (!includeDetails) {
+            return response;
+        }
+
+        for (SteamFriendsListResponse.Friend friend : response.getFriendslist().getFriends()) {
+            String friendSteamId = friend.getSteamid();
+            SteamUserData userData = getUserData(friendSteamId);
+            if (userData != null && userData.getResponse() != null) {
+                List<SteamUserData.Player> players = userData.getResponse().getPlayers();
+                if (!players.isEmpty()) {
+                    SteamUserData.Player player = players.get(0);
+                    friend.setFriendName(player.getPersonaname());
+                    friend.setAvatarFullUrl(player.getAvatarfull());
+                    friend.setAvatarMediumUrl(player.getAvatarmedium());
+                    friend.setAvatarUrl(player.getAvatar());
+                    friend.setProfileUrl(player.getProfileurl());
+                }
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                break;
+            }
+        }
+
+        return response;
     }
+
 }

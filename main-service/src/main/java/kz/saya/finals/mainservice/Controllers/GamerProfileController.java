@@ -91,6 +91,48 @@ public class GamerProfileController {
         return ResponseEntity.ok(achievements);
     }
 
+    @PostMapping("/steam/link")
+    public ResponseEntity<?> linkSteamAccount(@RequestParam String steamId) {
+        GamerProfile profile = getCurrentUserProfile();
+        if (profile == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            gamerProfileService.linkSteamAccount(profile.getId(), steamId);
+            return ResponseEntity.ok("Steam account linked successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/steam/unlink")
+    public ResponseEntity<?> unlinkSteamAccount() {
+        GamerProfile profile = getCurrentUserProfile();
+        if (profile == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            gamerProfileService.unlinkSteamAccount(profile.getId());
+            return ResponseEntity.ok("Steam account unlinked successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/steam/friends/scan")
+    public ResponseEntity<?> fetchSteamFriends() {
+        GamerProfile profile = getCurrentUserProfile();
+        if (profile == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            gamerProfileService.scanFriendList(profile.getId());
+            return ResponseEntity.ok("Steam friends fetched successfully");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
     private GamerProfile getCurrentUserProfile() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {

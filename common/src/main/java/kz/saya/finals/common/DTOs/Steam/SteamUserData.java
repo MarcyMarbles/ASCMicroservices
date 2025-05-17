@@ -9,12 +9,12 @@ public class SteamUserData {
     private Response response;
 
     @Data
-    static class Response {
+    public static class Response {
         private List<Player> players;
     }
 
     @Data
-    static class Player {
+    public static class Player {
         private String steamid;
         private int communityvisibilitystate;
         private int profilestate;

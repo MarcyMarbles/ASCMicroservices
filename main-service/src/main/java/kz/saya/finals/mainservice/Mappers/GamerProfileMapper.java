@@ -10,7 +10,6 @@ public class GamerProfileMapper {
         return new GamerProfileDto()
                 .setId(profile.getId())
                 .setNickname(profile.getNickname())
-                .setSteamId(profile.getSteamId())
                 .setDiscordName(profile.getDiscordName())
                 .setDescription(profile.getDescription())
                 .setRegion(profile.getRegion().name())
@@ -23,7 +22,6 @@ public class GamerProfileMapper {
         GamerProfile profile = new GamerProfile();
         profile.setId(dto.getId());
         profile.setNickname(dto.getNickname());
-        profile.setSteamId(dto.getSteamId());
         profile.setDiscordName(dto.getDiscordName());
         profile.setDescription(dto.getDescription());
         profile.setUserId(dto.getUserId());
