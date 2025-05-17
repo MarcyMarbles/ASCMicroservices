@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GamerProfileService {
@@ -76,6 +77,11 @@ public class GamerProfileService {
         gamerProfile.setSteamProfile(steamProfile);
 
         gamerProfileRepository.save(gamerProfile);
+
+        CompletableFuture<Void> parseNeededData; // Я хочу сделать так чтобы ассинхроно запрашивались данные
+        // Например время проведения в игре, и если у человека есть игры где он наиграл больше 1000 часов
+        // Выдавать ему системную ачивку
+
 
         return gamerProfile;
     }
