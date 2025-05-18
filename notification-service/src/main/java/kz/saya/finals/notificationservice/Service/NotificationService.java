@@ -1,7 +1,9 @@
 package kz.saya.finals.notificationservice.Service;
 
 import kz.saya.finals.common.Enums.NotificationType;
+import kz.saya.finals.notificationservice.Entity.Notification;
 import kz.saya.finals.notificationservice.Entity.NotificationSchedule;
+import kz.saya.finals.notificationservice.Repository.NotificationRepository;
 import kz.saya.finals.notificationservice.Repository.NotificationScheduleRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,27 @@ public class NotificationService {
     private final EmailService emailService;
     private final NotificationScheduleRepository notificationScheduleRepository;
     private final TelegramService telegramService;
+    private final NotificationRepository notificationRepository;
 
-    public NotificationService(EmailService emailService, NotificationScheduleRepository notificationScheduleRepository, TelegramService telegramService) {
+    public NotificationService(EmailService emailService, NotificationScheduleRepository notificationScheduleRepository, TelegramService telegramService, NotificationRepository notificationRepository) {
         this.emailService = emailService;
         this.notificationScheduleRepository = notificationScheduleRepository;
         this.telegramService = telegramService;
+        this.notificationRepository = notificationRepository;
+    }
+
+    public void sendNotification(Notification notification) {
+        try {
+            if (notification.getType() == NotificationType.EMAIL) {
+                emailService.sendEmail(notification);
+            } else if (notification.getType() == NotificationType.TELEGRAM) {
+                telegramService.sendMessage(notification);
+            }
+        } catch (Exception e) {
+            notification.setSent(false);
+        }
+        notification.setSent(true);
+        notificationRepository.save(notification);
     }
 
 

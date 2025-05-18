@@ -1,5 +1,6 @@
 package kz.saya.finals.notificationservice.Service;
 
+import kz.saya.finals.notificationservice.Entity.Notification;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -19,5 +20,9 @@ public class TelegramService {
                 "chat_id", chatId,
                 "text", message
         ), String.class);
+    }
+
+    public void sendMessage(Notification notification) {
+        sendMessage(notification.getRecipient().getLink(), notification.getContent());
     }
 }

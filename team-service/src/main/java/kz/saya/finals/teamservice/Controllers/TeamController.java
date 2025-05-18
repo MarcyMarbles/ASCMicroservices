@@ -2,9 +2,11 @@ package kz.saya.finals.teamservice.Controllers;
 
 import kz.saya.finals.common.DTOs.GamerProfileDto;
 import kz.saya.finals.common.DTOs.TeamCreateDto;
+import kz.saya.finals.common.DTOs.TeamDto;
 import kz.saya.finals.common.DTOs.TeamUpdateDto;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
 import kz.saya.finals.teamservice.Entities.Team;
+import kz.saya.finals.teamservice.Mapper.TeamMapper;
 import kz.saya.finals.teamservice.Services.TeamService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -114,14 +116,22 @@ public class TeamController {
     }
 
     @GetMapping("/creator/{creatorId}")
-    public ResponseEntity<List<Team>> getTeamsByCreator(@PathVariable UUID creatorId) {
+    public ResponseEntity<List<TeamDto>> getTeamsByCreator(@PathVariable UUID creatorId) {
         List<Team> teams = teamService.getTeamsByCreator(creatorId);
-        return ResponseEntity.ok(teams);
+        teams.get(0).getMembers().forEach(member -> {
+            member.setUserId(gamerProfileServiceClient.getProfileById(member.getPlayerId()).getUserId());
+        });
+        return ResponseEntity.ok(TeamMapper.toDtoList(teams));
     }
 
     @GetMapping("/member/{playerId}")
-    public ResponseEntity<List<Team>> getTeamsByMember(@PathVariable UUID playerId) {
+    public ResponseEntity<List<TeamDto>> getTeamsByMember(@PathVariable UUID playerId) {
         List<Team> teams = teamService.getTeamsByMember(playerId);
-        return ResponseEntity.ok(teams);
+        // Скорее всего у человека будет 1 команда на профиль, не буду менять, буду брать .get(0)
+        teams.get(0).getMembers().forEach(member -> {
+            member.setUserId(gamerProfileServiceClient.getProfileById(member.getPlayerId()).getUserId());
+            // TODO: Либо добавить поле UserID в TeamMember, либо оставить так, не разрушая архитектуру
+        });
+        return ResponseEntity.ok(TeamMapper.toDtoList(teams));
     }
 }

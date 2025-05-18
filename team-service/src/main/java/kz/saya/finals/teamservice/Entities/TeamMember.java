@@ -1,5 +1,6 @@
 package kz.saya.finals.teamservice.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class TeamMember extends MappedSuperClass {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
+    @JsonIgnore
     private Team team;
 
     @Column(name = "player_id", nullable = false)
@@ -22,5 +24,8 @@ public class TeamMember extends MappedSuperClass {
 
     @Column(name = "is_active")
     private boolean isActive;
+
+    @Transient
+    private UUID userId; // Не сохраняем в базе
 }
 

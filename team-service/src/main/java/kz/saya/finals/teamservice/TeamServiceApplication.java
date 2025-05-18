@@ -13,7 +13,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan(basePackages = {
         "kz.saya.sbasecore",
         "kz.saya.sbasesecurity",
-        "kz.saya.finals.teamservice"
+        "kz.saya.finals.teamservice",
 })
 @EntityScan(basePackages = {
         "kz.saya.finals.teamservice.Entities",

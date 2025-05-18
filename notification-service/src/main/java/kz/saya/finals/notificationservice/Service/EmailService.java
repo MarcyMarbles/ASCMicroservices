@@ -1,5 +1,6 @@
 package kz.saya.finals.notificationservice.Service;
 
+import kz.saya.finals.notificationservice.Entity.Notification;
 import kz.saya.finals.notificationservice.Entity.NotificationSchedule;
 import kz.saya.finals.notificationservice.Repository.NotificationScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +28,9 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(text);
         mailSender.send(message);
+    }
+
+    public void sendEmail(Notification notification) {
+        sendEmail(notification.getRecipient().getLink(), notification.getSubject(), notification.getContent());
     }
 }
