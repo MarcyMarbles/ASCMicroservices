@@ -1,7 +1,9 @@
 package kz.saya.finals.scrimservice.Controllers;
 
-import kz.saya.finals.common.DTOs.ScrimDto;
-import kz.saya.finals.common.DTOs.ScrimRequestDto;
+import kz.saya.finals.common.DTOs.Scrim.ScrimDto;
+import kz.saya.finals.common.DTOs.Scrim.ScrimEndedDTO;
+import kz.saya.finals.common.DTOs.Scrim.ScrimRequestDto;
+import kz.saya.finals.scrimservice.Entities.Scrim;
 import kz.saya.finals.scrimservice.Service.ScrimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,16 @@ public class ScrimController {
     @GetMapping
     public List<ScrimDto> list() {
         return scrimService.getAllScrims();
+    }
+
+    @PostMapping("/end")
+    public ResponseEntity<?> resultGame(@RequestBody ScrimEndedDTO scrimEndedDTO) {
+        boolean exists = scrimService.isExists(scrimEndedDTO.getScrimId());
+        if (!exists) {
+            return ResponseEntity.notFound().build();
+        }
+        scrimService.endScrim(scrimEndedDTO);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")

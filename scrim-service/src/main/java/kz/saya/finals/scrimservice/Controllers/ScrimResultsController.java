@@ -1,13 +1,14 @@
 package kz.saya.finals.scrimservice.Controllers;
 
+import kz.saya.finals.common.DTOs.Scrim.ScrimResultsDto;
 import kz.saya.finals.scrimservice.Entities.ScrimResults;
+import kz.saya.finals.scrimservice.Mapper.ScrimResultMapper;
 import kz.saya.finals.scrimservice.Service.ScrimResultsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -27,8 +28,8 @@ public class ScrimResultsController {
     }
 
     @GetMapping
-    public List<ScrimResults> list(@PathVariable UUID scrimId) {
-        return resultsService.getByScrim(scrimId);
+    public ScrimResultsDto get(@PathVariable UUID scrimId) {
+        return ScrimResultMapper.toDto(resultsService.getByScrimId(scrimId));
     }
 
     @PutMapping("/{id}")

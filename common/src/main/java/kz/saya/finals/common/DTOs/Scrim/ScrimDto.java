@@ -1,4 +1,4 @@
-package kz.saya.finals.common.DTOs;
+package kz.saya.finals.common.DTOs.Scrim;
 
 import kz.saya.finals.common.Enums.ScrimType;
 import lombok.AllArgsConstructor;

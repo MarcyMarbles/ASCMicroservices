@@ -9,4 +9,6 @@ include 'user-service',
         'eureka-server',
         'api-gateway',
         'tournament-service',
-        'notification-service';
+        'notification-service',
+        'matchmaking-service',
+        'ranking-service';

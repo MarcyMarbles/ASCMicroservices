@@ -1,6 +1,8 @@
 package kz.saya.finals.scrimservice.Controllers;
 
+import kz.saya.finals.common.DTOs.Scrim.TabInfoDto;
 import kz.saya.finals.scrimservice.Entities.TabInfo;
+import kz.saya.finals.scrimservice.Mapper.TabInfoMapper;
 import kz.saya.finals.scrimservice.Service.TabInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +29,8 @@ public class TabInfoController {
     }
 
     @GetMapping
-    public List<TabInfo> list(@PathVariable UUID scrimId) {
-        return tabInfoService.getByScrim(scrimId);
+    public List<TabInfoDto> list(@PathVariable UUID scrimId) {
+        return TabInfoMapper.toListDto(tabInfoService.getByScrim(scrimId));
     }
 
     @PutMapping("/{id}")

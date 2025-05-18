@@ -33,6 +33,11 @@ public class ScrimResultsService {
         return resultsRepository.findByScrimId(scrimId);
     }
 
+    public ScrimResults getByScrimId(UUID scrimId) {
+        List<ScrimResults> results = resultsRepository.findByScrimId(scrimId);
+        return results.isEmpty() ? null : results.get(0);
+    }
+
     public ScrimResults updateResults(UUID id, ScrimResults results) {
         ScrimResults existing = resultsRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Results not found"));
