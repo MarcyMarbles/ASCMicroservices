@@ -38,5 +38,6 @@ public class RankingController {
             return ResponseEntity.badRequest().body("Scrim is not ended properly");
         }
         rankService.proceedResults(scrimDto, scrimResultsDto, tabInfoDtos);
+        return ResponseEntity.ok("Results processed successfully");
     }
 }

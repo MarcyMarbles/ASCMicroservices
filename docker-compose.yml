@@ -1,6 +1,6 @@
 version: '3.9'
 
-x-db-list: &db_list auth_service_db,main_service_db,scrim_service_db,team_service_db,user_service_db,tournament_service_db,notification_service_db
+x-db-list: &db_list auth_service_db,main_service_db,scrim_service_db,team_service_db,user_service_db,tournament_service_db,notification_service_db,ranking_service_db
 
 services:
   # PostgreSQL Database
@@ -184,6 +184,22 @@ services:
       - MAIL_PORT=587
       - MAIL_USERNAME=gptmail2212@gmail.com
       - MAIL_PASSWORD=dvqjthgoagxwrtfv
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  ranking-service:
+    build: ./ranking-service
+    container_name: ranking-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ranking_service_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
     depends_on:
       postgres:
         condition: service_healthy

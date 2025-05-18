@@ -10,5 +10,4 @@ include 'user-service',
         'api-gateway',
         'tournament-service',
         'notification-service',
-        'matchmaking-service',
         'ranking-service';

@@ -41,6 +41,10 @@ spring:
           uri: lb://notification-service
           predicates:
             - Path=/api/notifications/**
+        - id: ranking-service
+          uri: lb://ranking-service
+          predicates:
+            - Path=/api/ranking/**
 
 eureka:
   client:
