@@ -6,14 +6,16 @@ import kz.saya.finals.notificationservice.Converter.MapToJsonConverter;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
 @Table(name = "notification_schedule")
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 public class NotificationSchedule extends MappedSuperClass {
     @ManyToOne
     @JoinColumn(name = "template_id")

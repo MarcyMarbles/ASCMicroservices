@@ -1,4 +1,6 @@
-version: '3.8'
+version: '3.9'
+
+x-db-list: &db_list auth_service_db,main_service_db,scrim_service_db,team_service_db,user_service_db,tournament_service_db,notification_service_db
 
 services:
   # PostgreSQL Database
@@ -10,17 +12,35 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_MULTIPLE_DATABASES: auth_service_db,main_service_db,scrim_service_db,team_service_db,user_service_db, tournament_service_db
+      POSTGRES_MULTIPLE_DATABASES: *db_list
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - microservices-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  db-init:
+    image: postgres:14
+    entrypoint: [ "/bin/bash", "/init/ensure-databases.sh" ]
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGPASSWORD: postgres
+      POSTGRES_MULTIPLE_DATABASES: *db_list
+    volumes:
+      - ./init-scripts/ensure-databases.sh:/init/ensure-databases.sh:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
 
   # Eureka Server
   eureka-server:
@@ -31,7 +51,7 @@ services:
     networks:
       - microservices-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -144,6 +164,26 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - microservices-network
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/notification_service_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka/
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_USERNAME=gptmail2212@gmail.com
+      - MAIL_PASSWORD=dvqjthgoagxwrtfv
     depends_on:
       postgres:
         condition: service_healthy

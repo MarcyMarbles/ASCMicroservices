@@ -15,7 +15,7 @@ public class SteamService {
     @Value("${steam.api.key}")
     private String apiKey;
 
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public SteamUserData getUserData(String steamId) {
         String url = String.format(

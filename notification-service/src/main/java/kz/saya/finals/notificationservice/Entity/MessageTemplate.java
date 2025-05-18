@@ -6,11 +6,13 @@ import jakarta.persistence.Table;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "message_template")
-@Data
-@EqualsAndHashCode(callSuper = true)
+@Getter
+@Setter
 public class MessageTemplate extends MappedSuperClass {
     private String name;
     private String subject; // для email

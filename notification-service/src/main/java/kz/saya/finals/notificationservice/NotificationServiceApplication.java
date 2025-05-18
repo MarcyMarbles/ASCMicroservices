@@ -19,7 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 )
 @EntityScan(
         basePackages = {
-                "kz.saya.finals.notificationservice.Entities",
+                "kz.saya.finals.notificationservice.Entity",
                 "kz.saya.sbasecore.Entity"
         }
 )

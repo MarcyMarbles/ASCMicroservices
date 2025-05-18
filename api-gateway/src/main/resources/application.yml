@@ -20,7 +20,7 @@ spring:
         - id: main-service
           uri: lb://main-service
           predicates:
-            - Path=/api/files/**, /api/games/**, /api/gamer-profiles/**
+            - Path=/api/files/**, /api/games/**, /api/gamer-profiles/**, /testing/**
         - id: scrim-service
           uri: lb://scrim-service
           predicates:
@@ -37,6 +37,10 @@ spring:
           uri: lb://tournament-service
           predicates:
             - Path=/api/tournaments/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
 
 eureka:
   client:

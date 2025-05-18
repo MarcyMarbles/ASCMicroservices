@@ -10,6 +10,7 @@ import java.util.UUID;
 public class NotificationRequestDto {
     private NotificationType type;
     private String content;
+    private String subject;
     private List<UUID> recipient;
 
 }

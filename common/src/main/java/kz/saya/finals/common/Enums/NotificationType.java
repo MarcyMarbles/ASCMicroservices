@@ -1,20 +1,17 @@
 package kz.saya.finals.common.Enums;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
 public enum NotificationType {
     EMAIL("EMAIL"),
     TELEGRAM("TELEGRAM");
 
+    @Setter
     private String type;
 
     NotificationType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
         this.type = type;
     }
 

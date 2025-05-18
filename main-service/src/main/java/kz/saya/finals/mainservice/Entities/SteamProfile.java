@@ -5,12 +5,14 @@ import jakarta.persistence.*;
 import kz.saya.sbasecore.Entity.MappedSuperClass;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 public class SteamProfile extends MappedSuperClass {
     private String steamId;
     private String steamName;

@@ -5,6 +5,7 @@ import kz.saya.finals.common.DTOs.AuthRequestDTO;
 import kz.saya.finals.common.DTOs.RegisterRequestDTO;
 import kz.saya.finals.common.DTOs.UserDTO;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;

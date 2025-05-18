@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Accessors(chain = true)
-public class AuthRequestDTO {
-    String login;
-    String password;
+public class RolesCreationDto {
+    private String code; // ADMIN or ROLE_ADMIN
+    private String description;
 }

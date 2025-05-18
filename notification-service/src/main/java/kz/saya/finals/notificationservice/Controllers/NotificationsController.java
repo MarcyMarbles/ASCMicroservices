@@ -47,8 +47,21 @@ public class NotificationsController {
         if (user == null) {
             return ResponseEntity.status(401).body("Unauthorized");
         }
-        if (user.getRoles().contains("ADMIN")) {
-            // На похуй отправляем всем кому было запрошенно отправить
+        System.out.println(user.getRoles());
+        List<String> roles = user.getRoles();
+        if (roles.contains("ROLE_ADMIN")) {
+            List<NotificationLink> notificationLinks = notificationLinkRepository.findAllByUserIdInAndTypeEquals(request.getRecipient(), request.getType());
+            if (notificationLinks.isEmpty()) {
+                return ResponseEntity.status(404).body("None of the recipients have notifications turned on");
+            }
+            for (NotificationLink notificationLink : notificationLinks) {
+                Notification notification = new Notification();
+                notification.setType(request.getType());
+                notification.setRecipient(notificationLink);
+                notification.setSubject(request.getSubject());
+                notification.setContent(request.getContent());
+                notificationService.sendNotification(notification);
+            }
             return ResponseEntity.ok("Notification sent to all users");
         }
         GamerProfileDto gamerProfile = getCurrentUserProfile();

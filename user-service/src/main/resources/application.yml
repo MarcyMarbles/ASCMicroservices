@@ -30,3 +30,5 @@ eureka:
 jwt:
   secret: Y7o3bAz+2zkC6upMEW3vW3NKtWIz7AAV75Op5CDmV2o=
   expirationMs: 36000000
+
+ADMIN_PASSWORD_HASH: $2a$10$totIx3sIJgGlRDG8jg6Kv.Jmo1kDUMI4pBh.MAZL9x8IOt9Ye1s52
