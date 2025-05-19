@@ -24,4 +24,5 @@ public class ScrimDto implements Serializable {
     private ScrimType scrimType;
     private UUID creatorId;
     private String creatorName;
+    private boolean isStarted;
 }

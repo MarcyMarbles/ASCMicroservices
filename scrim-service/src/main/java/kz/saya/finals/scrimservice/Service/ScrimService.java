@@ -1,11 +1,12 @@
 package kz.saya.finals.scrimservice.Service;
 
+import kz.saya.finals.common.DTOs.GameDTO;
 import kz.saya.finals.common.DTOs.GamerProfileDto;
 import kz.saya.finals.common.DTOs.Scrim.ScrimDto;
 import kz.saya.finals.common.DTOs.Scrim.ScrimEndedDTO;
 import kz.saya.finals.common.DTOs.Scrim.ScrimRequestDto;
-import kz.saya.finals.common.DTOs.Scrim.TabInfoDto;
 import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.feigns.Clients.GameServiceClient;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
 import kz.saya.finals.scrimservice.Entities.Scrim;
@@ -19,57 +20,114 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Refactored service layer for handling scrims.
+ * <p>
+ * The boolean flag <b>Scrim.started</b> (instead of the old <i>isPrivate</i>) now
+ * denotes that the match has begun. While <code>started == false</code> the
+ * scrim is visible and players are allowed to join; as soon as the creator
+ * starts the match the flag flips to <code>true</code> and the lobby becomes
+ * closed for further changes.
+ * </p>
+ */
 @Service
+@Transactional
 public class ScrimService {
+
     private final ScrimRepository scrimRepository;
     private final UserServiceClient userServiceClient;
     private final GamerProfileServiceClient gamerProfileServiceClient;
     private final TabInfoRepository tabInfoRepository;
     private final ScrimResultsRepository scrimResultsRepository;
+    private final GameServiceClient gameServiceClient;
 
     @Autowired
     public ScrimService(ScrimRepository scrimRepository,
                         UserServiceClient userServiceClient,
-                        GamerProfileServiceClient gamerProfileServiceClient, TabInfoRepository tabInfoRepository, ScrimResultsRepository scrimResultsRepository) {
+                        GamerProfileServiceClient gamerProfileServiceClient,
+                        TabInfoRepository tabInfoRepository,
+                        ScrimResultsRepository scrimResultsRepository,
+                        GameServiceClient gameServiceClient) {
         this.scrimRepository = scrimRepository;
         this.userServiceClient = userServiceClient;
         this.gamerProfileServiceClient = gamerProfileServiceClient;
         this.tabInfoRepository = tabInfoRepository;
         this.scrimResultsRepository = scrimResultsRepository;
+        this.gameServiceClient = gameServiceClient;
     }
+
+    // ---------------------------------------------------------------------
+    //  Public API
+    // ---------------------------------------------------------------------
 
     public boolean isExists(UUID id) {
         return scrimRepository.existsById(id);
     }
 
     public ScrimDto createScrim(ScrimRequestDto dto) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
-        }
-        String login = auth.getName();
-        GamerProfileDto gamerProfile = gamerProfileServiceClient.getProfileByLogin(login);
-        if (gamerProfile == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gamer profile not found");
-        }
+        GamerProfileDto creator = getCurrentGamerProfile();
+        GameDTO game = fetchGame(dto.getGameId());
 
         Scrim scrim = new Scrim();
         scrim.setName(dto.getName());
         scrim.setGameId(dto.getGameId());
+        scrim.setGameName(game.getName());
         scrim.setScrimType(dto.getScrimType());
-        scrim.setPrivate(dto.isPrivate());
-        scrim.setCreatorId(gamerProfile.getId());
-        scrim.setCreatorName(gamerProfile.getNickname());
+        scrim.setStarted(false);                 // lobby is open until start()
+        scrim.setCreatorId(creator.getId());
+        scrim.setCreatorName(creator.getNickname());
+        scrim.setPlayerList(new ArrayList<>(List.of(creator.getId())));
 
-        Scrim saved = scrimRepository.save(scrim);
-        return mapToDto(saved);
+        return mapToDto(scrimRepository.save(scrim));
+    }
+
+    public ScrimDto joinScrim(UUID scrimId) {
+        Scrim scrim = scrimRepository.findByIdAndStartedIsFalse(scrimId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found or already started"));
+
+        GamerProfileDto gamer = getCurrentGamerProfile();
+        if (scrim.getPlayerList().contains(gamer.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Already in scrim");
+        }
+        if (scrim.isStarted()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Scrim already started");
+        }
+        scrim.getPlayerList().add(gamer.getId());
+        return mapToDto(scrimRepository.save(scrim));
+    }
+
+    public ScrimDto leaveScrim(UUID scrimId) {
+        Scrim scrim = getScrimOrThrow(scrimId);
+
+        GamerProfileDto gamer = getCurrentGamerProfile();
+        if (!scrim.getPlayerList().remove(gamer.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not in scrim");
+        }
+        return mapToDto(scrimRepository.save(scrim));
+    }
+
+    public ScrimDto startScrim(UUID scrimId) {
+        Scrim scrim = getScrimOrThrow(scrimId);
+
+        GamerProfileDto creator = getCurrentGamerProfile();
+        if (!creator.getId().equals(scrim.getCreatorId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can start scrim");
+        }
+        if (scrim.getPlayerList().size() <= 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not enough players to start scrim");
+        }
+        if (scrim.isStarted()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Scrim already started");
+        }
+
+        scrim.setStarted(true);
+        return mapToDto(scrimRepository.save(scrim));
     }
 
     public List<ScrimDto> getAllScrims() {
@@ -79,43 +137,117 @@ public class ScrimService {
     }
 
     public ScrimDto getScrimById(UUID id) {
-        Scrim scrim = scrimRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found"));
-        return mapToDto(scrim);
+        return mapToDto(getScrimOrThrow(id));
     }
 
     public ScrimDto updateScrim(UUID id, ScrimRequestDto dto) {
-        Scrim existing = scrimRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found"));
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String login = auth != null ? auth.getName() : null;
-        UserDTO user = userServiceClient.getByLogin(login);
-        if (!existing.getCreatorId().equals(user.getId())) {
+        Scrim scrim = getScrimOrThrow(id);
+        GamerProfileDto user = getCurrentGamerProfile();
+        if (!scrim.getCreatorId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not owner");
         }
+        if (scrim.isStarted()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot edit started scrim");
+        }
 
-        existing.setName(dto.getName());
-        existing.setGameId(dto.getGameId());
-        existing.setScrimType(dto.getScrimType());
-        existing.setPrivate(dto.isPrivate());
+        scrim.setName(dto.getName());
+        scrim.setGameId(dto.getGameId());
+        scrim.setScrimType(dto.getScrimType());
 
-        Scrim saved = scrimRepository.save(existing);
-        return mapToDto(saved);
+        return mapToDto(scrimRepository.save(scrim));
     }
 
     public void deleteScrim(UUID id) {
-        Scrim existing = scrimRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found"));
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String login = auth != null ? auth.getName() : null;
-        UserDTO user = userServiceClient.getByLogin(login);
-        if (!existing.getCreatorId().equals(user.getId())) {
+        Scrim scrim = getScrimOrThrow(id);
+        GamerProfileDto user = getCurrentGamerProfile();
+        if (!scrim.getCreatorId().equals(user.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not owner");
         }
+        scrimRepository.delete(scrim);
+    }
 
-        scrimRepository.delete(existing);
+    public void endScrim(ScrimEndedDTO dto) {
+        Scrim scrim = getScrimOrThrow(dto.getScrimId());
+        if (!scrim.isStarted()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Scrim is not running");
+        }
+
+        int kills = 0, deaths = 0, assists = 0;
+        int lKills = 0, lDeaths = 0, lAssists = 0;
+        UUID mvpId = null;
+
+        for (Map.Entry<UUID, List<ScrimEndedDTO.PlayerResult>> entry : dto.getPlayerResult().entrySet()) {
+            UUID teamId = entry.getKey();
+            List<ScrimEndedDTO.PlayerResult> results = entry.getValue();
+
+            if (!scrim.getTeamList().contains(teamId)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Team is not in the scrim");
+            }
+
+            for (ScrimEndedDTO.PlayerResult pr : results) {
+                if (!scrim.getPlayerList().contains(pr.getPlayerId())) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Player is not in the scrim");
+                }
+
+                if (teamId.equals(dto.getWinnerId())) {
+                    kills += pr.getKills();
+                    deaths += pr.getDeaths();
+                    assists += pr.getAssists();
+                } else {
+                    lKills += pr.getKills();
+                    lDeaths += pr.getDeaths();
+                    lAssists += pr.getAssists();
+                }
+
+                TabInfo tab = new TabInfo();
+                tab.setPlayerId(pr.getPlayerId());
+                tab.setKills(pr.getKills());
+                tab.setAssists(pr.getAssists());
+                tab.setDeaths(pr.getDeaths());
+                tab.setScore(pr.getScore());
+                tabInfoRepository.save(tab);
+            }
+            mvpId = getMvp(results);
+        }
+
+        ScrimResults scrimResults = new ScrimResults();
+        scrimResults.setScrim(scrim);
+        scrimResults.setWinnerId(dto.getWinnerId());
+        scrimResults.setMvpId(mvpId);
+        scrimResults.setKills(kills);
+        scrimResults.setDeaths(deaths);
+        scrimResults.setAssists(assists);
+        scrimResults.setLKills(lKills);
+        scrimResults.setLDeaths(lDeaths);
+        scrimResults.setLAssists(lAssists);
+        scrimResultsRepository.save(scrimResults);
+    }
+
+
+    private Scrim getScrimOrThrow(UUID id) {
+        return scrimRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found"));
+    }
+
+    private GamerProfileDto getCurrentGamerProfile() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        }
+        String login = auth.getName();
+        GamerProfileDto profile = gamerProfileServiceClient.getProfileByLogin(login);
+        if (profile == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Gamer profile not found");
+        }
+        return profile;
+    }
+
+    private GameDTO fetchGame(UUID gameId) {
+        GameDTO game = gameServiceClient.getGameById(gameId);
+        if (game == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+        }
+        return game;
     }
 
     private ScrimDto mapToDto(Scrim scrim) {
@@ -128,64 +260,12 @@ public class ScrimService {
                 .setTeamList(scrim.getTeamList())
                 .setScrimType(scrim.getScrimType())
                 .setCreatorId(scrim.getCreatorId())
-                .setCreatorName(scrim.getCreatorName());
+                .setCreatorName(scrim.getCreatorName())
+                .setStarted(scrim.isStarted());
     }
 
-    public void endScrim(ScrimEndedDTO scrimEndedDTO) {
-        Scrim scrim = scrimRepository.findById(scrimEndedDTO.getScrimId()).orElse(null);
-        if (scrim == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found");
-        }
-        int kills = 0;
-        int deaths = 0;
-        int assists = 0;
-        int lKills = 0;
-        int lDeaths = 0;
-        int lAssists = 0;
-        UUID mvpId = null;
-        for (UUID teamId : scrimEndedDTO.getPlayerResult().keySet()) {
-            if (!scrim.getTeamList().contains(teamId)) {
-                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Team is not in the scrim");
-            }
-            List<ScrimEndedDTO.PlayerResult> playerResults = scrimEndedDTO.getPlayerResult().get(teamId);
-            for (ScrimEndedDTO.PlayerResult playerResult : playerResults) {
-                if (!scrim.getPlayerList().contains(playerResult.getPlayerId())) {
-                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Player is not in the scrim");
-                }
-                if (teamId.equals(scrimEndedDTO.getWinnerId())) {
-                    kills += playerResult.getKills();
-                    deaths += playerResult.getDeaths();
-                    assists += playerResult.getAssists();
-                } else {
-                    lKills += playerResult.getKills();
-                    lDeaths += playerResult.getDeaths();
-                    lAssists += playerResult.getAssists();
-                }
-                TabInfo tabInfoDto = new TabInfo();
-                tabInfoDto.setPlayerId(playerResult.getPlayerId());
-                tabInfoDto.setKills(playerResult.getKills());
-                tabInfoDto.setAssists(playerResult.getAssists());
-                tabInfoDto.setDeaths(playerResult.getDeaths());
-                tabInfoDto.setScore(playerResult.getScore());
-                tabInfoRepository.save(tabInfoDto);
-            }
-            mvpId = getMvp(playerResults);
-        }
-        ScrimResults scrimResults = new ScrimResults();
-        scrimResults.setScrim(scrim);
-        scrimResults.setWinnerId(scrimEndedDTO.getWinnerId());
-        scrimResults.setMvpId(mvpId);
-        scrimResults.setKills(kills);
-        scrimResults.setDeaths(deaths);
-        scrimResults.setAssists(assists);
-        scrimResults.setLKills(lKills);
-        scrimResults.setLDeaths(lDeaths);
-        scrimResults.setLAssists(lAssists);
-        scrimResultsRepository.save(scrimResults);
-    }
-
-    private UUID getMvp(List<ScrimEndedDTO.PlayerResult> playerResults) {
-        return playerResults.stream()
+    private UUID getMvp(List<ScrimEndedDTO.PlayerResult> results) {
+        return results.stream()
                 .max(Comparator.comparingInt(ScrimEndedDTO.PlayerResult::getKills))
                 .map(ScrimEndedDTO.PlayerResult::getPlayerId)
                 .orElse(null);

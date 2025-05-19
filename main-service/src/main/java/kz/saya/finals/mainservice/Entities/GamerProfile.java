@@ -30,7 +30,7 @@ public class GamerProfile extends MappedSuperClass {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private Region region;
+    private Region region = Region.EU;
 
     private UUID userId;
 

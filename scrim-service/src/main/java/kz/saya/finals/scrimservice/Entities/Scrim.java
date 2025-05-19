@@ -29,11 +29,11 @@ public class Scrim extends MappedSuperClass {
 
     @Enumerated(EnumType.STRING)
     private ScrimType scrimType;
-    // StartDate - поле из MappedSuperClass
+    // StartDate - поле из MappedSuperClass НЕ ТРОГАТЬ
     // EndDate - поле из MappedSuperClass
     private UUID creatorId; // ID создателя скрима
     private String creatorName; // Имя создателя скрима
-    private boolean isPrivate; // Приватный ли скрим
+    private boolean started; // Начался ли скрим
 
 
 }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "main-service", path = "/api/gamer-profiles", configuration = FeignAuthConfig.class)
+@FeignClient(name = "main-service", contextId = "gameProfileServiceClient", path = "/api/gamer-profiles", configuration = FeignAuthConfig.class)
 public interface GamerProfileServiceClient {
 
     @GetMapping("/by-login")

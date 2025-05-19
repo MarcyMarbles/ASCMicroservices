@@ -8,7 +8,9 @@ import kz.saya.finals.scrimservice.Service.ScrimService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +29,33 @@ public class ScrimController {
     public ResponseEntity<ScrimDto> create(@RequestBody ScrimRequestDto request) {
         ScrimDto created = scrimService.createScrim(request);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/join")
+    public ResponseEntity<ScrimDto> join(@RequestParam UUID scrimId) {
+        ScrimDto joined = scrimService.joinScrim(scrimId);
+        if (joined == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found");
+        }
+        return new ResponseEntity<>(joined, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/leave")
+    public ResponseEntity<ScrimDto> leave(@RequestParam UUID scrimId) {
+        ScrimDto left = scrimService.leaveScrim(scrimId);
+        if (left == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found");
+        }
+        return new ResponseEntity<>(left, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/start")
+    public ResponseEntity<ScrimDto> start(@RequestParam UUID scrimId) {
+        ScrimDto started = scrimService.startScrim(scrimId);
+        if (started == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found");
+        }
+        return new ResponseEntity<>(started, HttpStatus.CREATED);
     }
 
     @GetMapping

@@ -33,3 +33,4 @@ echo - Main Service: via API Gateway
 echo - Scrim Service: via API Gateway
 echo.
 echo To stop the services, run: docker-compose down
+pause >nul

@@ -7,17 +7,15 @@ import kz.saya.finals.rankingservice.Entity.RankingLink;
 import kz.saya.finals.rankingservice.Entity.Skill;
 import kz.saya.finals.rankingservice.Repository.RankRepository;
 import kz.saya.finals.rankingservice.Repository.RankingLinkRepository;
+import lombok.Setter;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Sort;
 
 public class SkillEntityListener {
-    private final RankRepository rankRepository;
-    private final RankingLinkRepository rankingLinkRepository;
-
-    public SkillEntityListener(RankRepository rankRepository, RankingLinkRepository rankingLinkRepository) {
-        this.rankRepository = rankRepository;
-        this.rankingLinkRepository = rankingLinkRepository;
-    }
+    @Setter
+    private static RankRepository rankRepository;
+    @Setter
+    private static RankingLinkRepository rankingLinkRepository;
 
     @PostPersist
     public void afterInsert(Skill skill) {
