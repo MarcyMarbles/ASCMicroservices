@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "scrims-service", path = "/api/scrims", configuration = FeignAuthConfig.class)
+@FeignClient(name = "scrim-service", path = "/api/scrims", configuration = FeignAuthConfig.class)
 public interface ScrimServiceClient {
     @GetMapping("/{id}")
     ScrimDto get(@PathVariable UUID id);
 
-    @GetMapping("/{id}/results")
+    @GetMapping("/{id}/scrim-results")
     ScrimResultsDto getResults(@PathVariable UUID id);
 
     @GetMapping("/{id}/tab-info")

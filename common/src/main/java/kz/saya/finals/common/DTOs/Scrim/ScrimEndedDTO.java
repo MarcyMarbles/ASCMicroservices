@@ -9,7 +9,8 @@ import java.util.UUID;
 @Data
 public class ScrimEndedDTO {
     private UUID scrimId;
-    private Map<UUID, List<PlayerResult>> playerResult; // Team to player result
+    private Map<UUID, List<PlayerResult>> teamPlayerResult; // Team to player result
+    private Map<UUID, PlayerResult> nonTeamPlayerResult; // Player to player result
     private UUID winnerId; // Winner team
     private UUID mvpId; // MVP player
 

@@ -170,17 +170,21 @@ public class ScrimService {
         scrimRepository.delete(scrim);
     }
 
-    public void endScrim(ScrimEndedDTO dto) {
+    public void endTeamScrim(ScrimEndedDTO dto) {
+        GamerProfileDto gamer = getCurrentGamerProfile();
         Scrim scrim = getScrimOrThrow(dto.getScrimId());
         if (!scrim.isStarted()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Scrim is not running");
+        }
+        if (!scrim.getCreatorId().equals(gamer.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can end scrim");
         }
 
         int kills = 0, deaths = 0, assists = 0;
         int lKills = 0, lDeaths = 0, lAssists = 0;
         UUID mvpId = null;
 
-        for (Map.Entry<UUID, List<ScrimEndedDTO.PlayerResult>> entry : dto.getPlayerResult().entrySet()) {
+        for (Map.Entry<UUID, List<ScrimEndedDTO.PlayerResult>> entry : dto.getTeamPlayerResult().entrySet()) {
             UUID teamId = entry.getKey();
             List<ScrimEndedDTO.PlayerResult> results = entry.getValue();
 
@@ -227,7 +231,50 @@ public class ScrimService {
         scrimResultsRepository.save(scrimResults);
         scrim.setEnded(true);
         scrim = scrimRepository.save(scrim);
-        rankingServiceClient.proceedResults(scrim.getId());
+        if (scrim.isRanked()) {
+            rankingServiceClient.proceedResults(scrim.getId());
+        }
+    }
+
+    public void endPlayerScrim(ScrimEndedDTO dto) {
+        GamerProfileDto gamer = getCurrentGamerProfile();
+        Scrim scrim = getScrimOrThrow(dto.getScrimId());
+        if (!scrim.isStarted()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Scrim is not running");
+        }
+        if (scrim.getTeamList() != null && !scrim.getTeamList().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This isn't squad scrimmage");
+        }
+        if (!scrim.getCreatorId().equals(gamer.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can end scrim");
+        }
+        for (Map.Entry<UUID, ScrimEndedDTO.PlayerResult> entry : dto.getNonTeamPlayerResult().entrySet()) {
+            UUID playerId = entry.getKey();
+            ScrimEndedDTO.PlayerResult pr = entry.getValue();
+
+            if (!scrim.getPlayerList().contains(playerId)) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Player is not in the scrim");
+            }
+
+            TabInfo tab = new TabInfo();
+            tab.setPlayerId(playerId);
+            tab.setKills(pr.getKills());
+            tab.setAssists(pr.getAssists());
+            tab.setDeaths(pr.getDeaths());
+            tab.setScore(pr.getScore());
+            tabInfoRepository.save(tab);
+        }
+        // MVP doesn't really matter when there is only one player winning
+
+        ScrimResults scrimResults = new ScrimResults();
+        scrimResults.setScrim(scrim);
+        scrimResults.setWinnerId(dto.getWinnerId());
+        scrimResultsRepository.save(scrimResults);
+        scrim.setEnded(true);
+        scrim = scrimRepository.save(scrim);
+        if (scrim.isRanked()) {
+            rankingServiceClient.proceedResults(scrim.getId());
+        }
     }
 
 

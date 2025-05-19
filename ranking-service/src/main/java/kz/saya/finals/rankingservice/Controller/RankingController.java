@@ -11,6 +11,7 @@ import kz.saya.finals.feigns.Clients.UserServiceClient;
 import kz.saya.finals.rankingservice.Entity.Rank;
 import kz.saya.finals.rankingservice.Entity.RankingLink;
 import kz.saya.finals.rankingservice.Service.RankService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -42,9 +43,11 @@ public class RankingController {
         if (scrimDto == null) {
             return ResponseEntity.badRequest().body("Scrim not found");
         }
-        if (!scrimDto.getCreatorId().equals(gamerProfileDto.getId()) || !userDTO.getRoles().contains("ROLE_ADMIN")) {
-            return ResponseEntity.badRequest().body("You are not the creator of this scrim");
+        if (!scrimDto.getCreatorId().equals(gamerProfileDto.getId()) && !userDTO.getRoles().contains("ROLE_ADMIN")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not allowed to process this scrim’s results");
         }
+
         ScrimResultsDto scrimResultsDto = scrimServiceClient.getResults(scrimId);
         if (scrimResultsDto == null) {
             return ResponseEntity.badRequest().body("Scrim is not ended properly");
