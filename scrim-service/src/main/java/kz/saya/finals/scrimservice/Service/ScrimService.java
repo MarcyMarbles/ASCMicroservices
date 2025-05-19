@@ -1,11 +1,10 @@
 package kz.saya.finals.scrimservice.Service;
 
-import kz.saya.finals.common.DTOs.GameDTO;
-import kz.saya.finals.common.DTOs.GamerProfileDto;
+import kz.saya.finals.common.DTOs.Game.GameDTO;
+import kz.saya.finals.common.DTOs.Profile.GamerProfileDto;
 import kz.saya.finals.common.DTOs.Scrim.ScrimDto;
 import kz.saya.finals.common.DTOs.Scrim.ScrimEndedDTO;
 import kz.saya.finals.common.DTOs.Scrim.ScrimRequestDto;
-import kz.saya.finals.common.DTOs.UserDTO;
 import kz.saya.finals.feigns.Clients.GameServiceClient;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
 import kz.saya.finals.feigns.Clients.UserServiceClient;

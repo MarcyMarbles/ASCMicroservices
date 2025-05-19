@@ -1,7 +1,7 @@
 package kz.saya.finals.mainservice.Controllers;
 
-import kz.saya.finals.common.DTOs.GamerProfileDto;
-import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.common.DTOs.Profile.GamerProfileDto;
+import kz.saya.finals.common.DTOs.Auth.UserDTO;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
 import kz.saya.finals.mainservice.Entities.Achievement;
 import kz.saya.finals.mainservice.Entities.GamerProfile;

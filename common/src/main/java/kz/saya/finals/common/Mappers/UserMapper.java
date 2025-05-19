@@ -1,10 +1,9 @@
 package kz.saya.finals.common.Mappers;
 
-import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.common.DTOs.Auth.UserDTO;
 import kz.saya.sbasecore.Entity.Roles;
 import kz.saya.sbasecore.Entity.User;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 

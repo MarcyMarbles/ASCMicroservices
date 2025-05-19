@@ -1,7 +1,7 @@
 package kz.saya.finals.mainservice.Controllers;
 
-import kz.saya.finals.common.DTOs.GameCreateDTO;
-import kz.saya.finals.common.DTOs.GameDTO;
+import kz.saya.finals.common.DTOs.Game.GameCreateDTO;
+import kz.saya.finals.common.DTOs.Game.GameDTO;
 import kz.saya.finals.mainservice.Entities.Game;
 import kz.saya.finals.mainservice.Mappers.GameMapper;
 import kz.saya.finals.mainservice.Services.GameService;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 
 @RestController

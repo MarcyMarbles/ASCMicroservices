@@ -1,10 +1,9 @@
 package kz.saya.finals.mainservice.Services;
 
-import kz.saya.finals.common.DTOs.GameCreateDTO;
+import kz.saya.finals.common.DTOs.Game.GameCreateDTO;
 import kz.saya.finals.mainservice.Entities.Game;
 import kz.saya.finals.mainservice.Repositories.GameRepository;
 import kz.saya.sbasecore.Entity.FileDescriptor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package kz.saya.finals.common.DTOs;
+package kz.saya.finals.common.DTOs.Teams;
 
 import kz.saya.finals.common.Enums.Status;
 import lombok.AllArgsConstructor;

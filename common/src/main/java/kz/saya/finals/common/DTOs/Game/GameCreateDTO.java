@@ -1,4 +1,4 @@
-package kz.saya.finals.common.DTOs;
+package kz.saya.finals.common.DTOs.Game;
 
 public class GameCreateDTO {
     private String name;

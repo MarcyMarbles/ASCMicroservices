@@ -1,4 +1,4 @@
-package kz.saya.finals.common.DTOs;
+package kz.saya.finals.common.DTOs.Tournament;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

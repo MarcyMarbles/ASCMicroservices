@@ -1,6 +1,6 @@
 package kz.saya.finals.mainservice.Mappers;
 
-import kz.saya.finals.common.DTOs.GamerProfileDto;
+import kz.saya.finals.common.DTOs.Profile.GamerProfileDto;
 import kz.saya.finals.mainservice.Entities.GamerProfile;
 
 public class GamerProfileMapper {

@@ -1,4 +1,4 @@
-package kz.saya.finals.common.DTOs;
+package kz.saya.finals.common.DTOs.Auth;
 
 import java.util.List;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package kz.saya.finals.mainservice.Controllers;
 
-import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.common.DTOs.Auth.UserDTO;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
 import kz.saya.sbasecore.Entity.FileDescriptor;
 import kz.saya.sbasecore.POJOs.FileDescriptorDto;
@@ -15,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;

@@ -1,6 +1,6 @@
 package kz.saya.finals.tournamentservice.Controllers;
 
-import kz.saya.finals.common.DTOs.CreateTournamentDto;
+import kz.saya.finals.common.DTOs.Tournament.CreateTournamentDto;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
 import kz.saya.finals.tournamentservice.Services.TournamentService;

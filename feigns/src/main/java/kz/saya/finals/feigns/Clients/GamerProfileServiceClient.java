@@ -1,7 +1,7 @@
 package kz.saya.finals.feigns.Clients;
 
-import kz.saya.finals.common.DTOs.GamerProfileDto;
-import kz.saya.finals.common.DTOs.TeamDto;
+import kz.saya.finals.common.DTOs.Profile.GamerProfileDto;
+import kz.saya.finals.common.DTOs.Teams.TeamDto;
 import kz.saya.sbasesecurity.Feigns.FeignAuthConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

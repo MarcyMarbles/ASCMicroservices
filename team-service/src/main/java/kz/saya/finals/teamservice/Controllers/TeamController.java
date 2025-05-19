@@ -1,9 +1,9 @@
 package kz.saya.finals.teamservice.Controllers;
 
-import kz.saya.finals.common.DTOs.GamerProfileDto;
-import kz.saya.finals.common.DTOs.TeamCreateDto;
-import kz.saya.finals.common.DTOs.TeamDto;
-import kz.saya.finals.common.DTOs.TeamUpdateDto;
+import kz.saya.finals.common.DTOs.Profile.GamerProfileDto;
+import kz.saya.finals.common.DTOs.Teams.TeamCreateDto;
+import kz.saya.finals.common.DTOs.Teams.TeamDto;
+import kz.saya.finals.common.DTOs.Teams.TeamUpdateDto;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
 import kz.saya.finals.teamservice.Entities.Team;
 import kz.saya.finals.teamservice.Mapper.TeamMapper;

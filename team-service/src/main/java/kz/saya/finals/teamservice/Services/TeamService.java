@@ -1,7 +1,7 @@
 package kz.saya.finals.teamservice.Services;
 
-import kz.saya.finals.common.DTOs.TeamCreateDto;
-import kz.saya.finals.common.DTOs.TeamUpdateDto;
+import kz.saya.finals.common.DTOs.Teams.TeamCreateDto;
+import kz.saya.finals.common.DTOs.Teams.TeamUpdateDto;
 import kz.saya.finals.teamservice.Entities.Team;
 import kz.saya.finals.teamservice.Entities.TeamMember;
 import kz.saya.finals.teamservice.Entities.TeamRequest;

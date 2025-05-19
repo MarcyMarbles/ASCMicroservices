@@ -1,6 +1,6 @@
 package kz.saya.finals.teamservice.Mapper;
 
-import kz.saya.finals.common.DTOs.TeamDto;
+import kz.saya.finals.common.DTOs.Teams.TeamDto;
 import kz.saya.finals.teamservice.Entities.Team;
 
 import java.util.List;

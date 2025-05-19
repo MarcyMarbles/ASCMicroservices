@@ -1,4 +1,4 @@
-package kz.saya.finals.common.DTOs;
+package kz.saya.finals.common.DTOs.Auth;
 
 public class RegisterRequestDTO {
     String login;

@@ -1,6 +1,6 @@
 package kz.saya.finals.mainservice.Mappers;
 
-import kz.saya.finals.common.DTOs.GameDTO;
+import kz.saya.finals.common.DTOs.Game.GameDTO;
 import kz.saya.finals.mainservice.Entities.Game;
 import kz.saya.sbasecore.Entity.FileDescriptor;
 

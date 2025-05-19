@@ -1,15 +1,12 @@
-package kz.saya.finals.common.DTOs;
+package kz.saya.finals.common.DTOs.Teams;
 
 import lombok.Data;
 
-import java.util.UUID;
-
 @Data
-public class TeamCreateDto {
+public class TeamUpdateDto{
     private String name;
     private String tag;
     private String description;
     private String country;
-    private UUID creatorId;
+    private byte[] logo; // check on front if this is image
 }
-

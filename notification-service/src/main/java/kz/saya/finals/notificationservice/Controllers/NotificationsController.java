@@ -1,9 +1,9 @@
 package kz.saya.finals.notificationservice.Controllers;
 
-import kz.saya.finals.common.DTOs.GamerProfileDto;
-import kz.saya.finals.common.DTOs.TeamDto;
-import kz.saya.finals.common.DTOs.TeamMemberDto;
-import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.common.DTOs.Profile.GamerProfileDto;
+import kz.saya.finals.common.DTOs.Teams.TeamDto;
+import kz.saya.finals.common.DTOs.Teams.TeamMemberDto;
+import kz.saya.finals.common.DTOs.Auth.UserDTO;
 import kz.saya.finals.common.Enums.NotificationType;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
@@ -12,8 +12,6 @@ import kz.saya.finals.notificationservice.Entity.Notification;
 import kz.saya.finals.notificationservice.Entity.NotificationLink;
 import kz.saya.finals.notificationservice.Repository.NotificationLinkRepository;
 import kz.saya.finals.notificationservice.Service.NotificationService;
-import lombok.Data;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/notifications")

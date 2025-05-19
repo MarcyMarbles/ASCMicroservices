@@ -1,6 +1,6 @@
 package kz.saya.finals.mainservice.Services;
 
-import kz.saya.finals.common.DTOs.GamerProfileDto;
+import kz.saya.finals.common.DTOs.Profile.GamerProfileDto;
 import kz.saya.finals.common.DTOs.Steam.SteamFriendsListResponse;
 import kz.saya.finals.common.DTOs.Steam.SteamUserData;
 import kz.saya.finals.mainservice.Entities.GamerProfile;

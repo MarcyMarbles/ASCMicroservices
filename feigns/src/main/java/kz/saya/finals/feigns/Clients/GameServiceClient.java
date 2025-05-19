@@ -1,6 +1,6 @@
 package kz.saya.finals.feigns.Clients;
 
-import kz.saya.finals.common.DTOs.GameDTO;
+import kz.saya.finals.common.DTOs.Game.GameDTO;
 import kz.saya.sbasesecurity.Feigns.FeignAuthConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

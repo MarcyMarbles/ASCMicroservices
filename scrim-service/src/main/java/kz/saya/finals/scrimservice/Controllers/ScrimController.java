@@ -3,92 +3,102 @@ package kz.saya.finals.scrimservice.Controllers;
 import kz.saya.finals.common.DTOs.Scrim.ScrimDto;
 import kz.saya.finals.common.DTOs.Scrim.ScrimEndedDTO;
 import kz.saya.finals.common.DTOs.Scrim.ScrimRequestDto;
-import kz.saya.finals.scrimservice.Entities.Scrim;
 import kz.saya.finals.scrimservice.Service.ScrimService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST‑controller that exposes CRUD operations and match‑flow actions for {@code Scrim} entities.
+ * <p>
+ *  ✦  Conventional RESTful resource structure:
+ *  <ul>
+ *      <li><strong>POST   /api/scrims</strong>                – create lobby</li>
+ *      <li><strong>GET    /api/scrims</strong>                – list lobbies</li>
+ *      <li><strong>GET    /api/scrims/{id}</strong>           – lobby details</li>
+ *      <li><strong>PUT    /api/scrims/{id}</strong>           – edit open lobby</li>
+ *      <li><strong>DELETE /api/scrims/{id}</strong>           – delete lobby</li>
+ *      <li><strong>POST   /api/scrims/{id}/join</strong>     – join lobby</li>
+ *      <li><strong>POST   /api/scrims/{id}/leave</strong>    – leave lobby</li>
+ *      <li><strong>POST   /api/scrims/{id}/start</strong>    – lock & start match</li>
+ *      <li><strong>POST   /api/scrims/{id}/results</strong>  – submit final stats</li>
+ *  </ul>
+ *  <p>
+ *  ✦  The service layer remains the single source of business‑logic; the controller merely converts HTTP to method calls.
+ */
 @RestController
 @RequestMapping("/api/scrims")
+@RequiredArgsConstructor
 public class ScrimController {
+
     private final ScrimService scrimService;
 
-    @Autowired
-    public ScrimController(ScrimService scrimService) {
-        this.scrimService = scrimService;
-    }
-
+    /** Create a new scrim lobby. */
     @PostMapping
-    public ResponseEntity<ScrimDto> create(@RequestBody ScrimRequestDto request) {
-        ScrimDto created = scrimService.createScrim(request);
-        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ScrimDto create(@RequestBody @Validated ScrimRequestDto request) {
+        return scrimService.createScrim(request);
     }
 
-    @PostMapping("/join")
-    public ResponseEntity<ScrimDto> join(@RequestParam UUID scrimId) {
-        ScrimDto joined = scrimService.joinScrim(scrimId);
-        if (joined == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found");
-        }
-        return new ResponseEntity<>(joined, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/leave")
-    public ResponseEntity<ScrimDto> leave(@RequestParam UUID scrimId) {
-        ScrimDto left = scrimService.leaveScrim(scrimId);
-        if (left == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found");
-        }
-        return new ResponseEntity<>(left, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/start")
-    public ResponseEntity<ScrimDto> start(@RequestParam UUID scrimId) {
-        ScrimDto started = scrimService.startScrim(scrimId);
-        if (started == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Scrim not found");
-        }
-        return new ResponseEntity<>(started, HttpStatus.CREATED);
-    }
-
+    /** Return the list of all scrims (both open and running). */
     @GetMapping
     public List<ScrimDto> list() {
         return scrimService.getAllScrims();
     }
 
-    @PostMapping("/end")
-    public ResponseEntity<?> resultGame(@RequestBody ScrimEndedDTO scrimEndedDTO) {
-        boolean exists = scrimService.isExists(scrimEndedDTO.getScrimId());
-        if (!exists) {
-            return ResponseEntity.notFound().build();
-        }
-        scrimService.endScrim(scrimEndedDTO);
-        return ResponseEntity.ok().build();
-    }
-
+    /** Fetch details of a single scrim lobby. */
     @GetMapping("/{id}")
-    public ResponseEntity<ScrimDto> get(@PathVariable UUID id) {
-        ScrimDto dto = scrimService.getScrimById(id);
-        return ResponseEntity.ok(dto);
+    public ScrimDto get(@PathVariable UUID id) {
+        return scrimService.getScrimById(id);
     }
 
+    /** Edit lobby settings (allowed only while <code>started == false</code>). */
     @PutMapping("/{id}")
-    public ResponseEntity<ScrimDto> update(@PathVariable UUID id,
-                                           @RequestBody ScrimRequestDto request) {
-        ScrimDto dto = scrimService.updateScrim(id, request);
-        return ResponseEntity.ok(dto);
+    public ScrimDto update(@PathVariable UUID id,
+                           @RequestBody @Validated ScrimRequestDto request) {
+        return scrimService.updateScrim(id, request);
     }
 
+    /** Delete a lobby (creator only). */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
         scrimService.deleteScrim(id);
-        return ResponseEntity.noContent().build();
+    }
+
+
+    /** Join an open lobby. */
+    @PostMapping("/{scrimId}/join")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ScrimDto join(@PathVariable UUID scrimId) {
+        return scrimService.joinScrim(scrimId);
+    }
+
+    /** Leave an open lobby. */
+    @PostMapping("/{scrimId}/leave")
+    public ScrimDto leave(@PathVariable UUID scrimId) {
+        return scrimService.leaveScrim(scrimId);
+    }
+
+    /** Lock the lobby and start the game (creator only). */
+    @PostMapping("/{scrimId}/start")
+    public ScrimDto start(@PathVariable UUID scrimId) {
+        return scrimService.startScrim(scrimId);
+    }
+
+    /** Persist the final result sheet when the game ends. */
+    @PostMapping("/{scrimId}/results")
+    public ResponseEntity<Void> submitResults(@PathVariable UUID scrimId,
+                                              @RequestBody @Validated ScrimEndedDTO endedDTO) {
+        if (!scrimId.equals(endedDTO.getScrimId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        scrimService.endScrim(endedDTO);
+        return ResponseEntity.ok().build();
     }
 }

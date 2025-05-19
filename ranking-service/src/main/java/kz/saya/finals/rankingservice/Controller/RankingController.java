@@ -40,4 +40,9 @@ public class RankingController {
         rankService.proceedResults(scrimDto, scrimResultsDto, tabInfoDtos);
         return ResponseEntity.ok("Results processed successfully");
     }
+
+    @GetMapping
+    public ResponseEntity<?> getRanks(){
+
+    }
 }

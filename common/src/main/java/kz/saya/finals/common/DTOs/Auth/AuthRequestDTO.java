@@ -1,4 +1,4 @@
-package kz.saya.finals.common.DTOs;
+package kz.saya.finals.common.DTOs.Auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

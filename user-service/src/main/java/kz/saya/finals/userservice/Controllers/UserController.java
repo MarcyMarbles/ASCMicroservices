@@ -1,8 +1,8 @@
 package kz.saya.finals.userservice.Controllers;
 
-import kz.saya.finals.common.DTOs.RegisterRequestDTO;
-import kz.saya.finals.common.DTOs.RolesCreationDto;
-import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.common.DTOs.Auth.RegisterRequestDTO;
+import kz.saya.finals.common.DTOs.Roles.RolesCreationDto;
+import kz.saya.finals.common.DTOs.Auth.UserDTO;
 import kz.saya.finals.common.Mappers.UserMapper;
 import kz.saya.sbasecore.Entity.Roles;
 import kz.saya.sbasecore.Entity.User;
@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import javax.management.relation.Role;
 
 @RestController
 @RequestMapping("/api/user")

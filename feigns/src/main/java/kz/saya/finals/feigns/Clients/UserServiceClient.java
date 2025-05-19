@@ -1,7 +1,7 @@
 package kz.saya.finals.feigns.Clients;
 
-import kz.saya.finals.common.DTOs.RegisterRequestDTO;
-import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.common.DTOs.Auth.RegisterRequestDTO;
+import kz.saya.finals.common.DTOs.Auth.UserDTO;
 import kz.saya.sbasesecurity.Feigns.FeignAuthConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

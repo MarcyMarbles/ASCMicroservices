@@ -1,11 +1,10 @@
 package kz.saya.finals.authservice.Controllers;
 
 import kz.saya.finals.authservice.Service.JwtUtility;
-import kz.saya.finals.common.DTOs.AuthRequestDTO;
-import kz.saya.finals.common.DTOs.RegisterRequestDTO;
-import kz.saya.finals.common.DTOs.UserDTO;
+import kz.saya.finals.common.DTOs.Auth.AuthRequestDTO;
+import kz.saya.finals.common.DTOs.Auth.RegisterRequestDTO;
+import kz.saya.finals.common.DTOs.Auth.UserDTO;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
