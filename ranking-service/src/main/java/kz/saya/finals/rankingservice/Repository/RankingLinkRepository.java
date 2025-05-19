@@ -14,4 +14,6 @@ public interface RankingLinkRepository extends JpaRepository<RankingLink, UUID>,
     RankingLink findByPlayerProfileIdAndRankGameId(UUID playerProfileId, UUID rankGameId);
 
     List<RankingLink> findByPlayerProfileIdInAndRankGameId(List<UUID> playerProfileIds, UUID rankGameId);
+
+    List<RankingLink> findByPlayerProfileId(UUID playerProfileId);
 }

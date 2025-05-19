@@ -269,4 +269,5 @@ public class ScrimService {
                 .map(ScrimEndedDTO.PlayerResult::getPlayerId)
                 .orElse(null);
     }
+
 }

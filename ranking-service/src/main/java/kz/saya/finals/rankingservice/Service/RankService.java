@@ -3,6 +3,7 @@ package kz.saya.finals.rankingservice.Service;
 import kz.saya.finals.common.DTOs.Scrim.ScrimDto;
 import kz.saya.finals.common.DTOs.Scrim.ScrimResultsDto;
 import kz.saya.finals.common.DTOs.Scrim.TabInfoDto;
+import kz.saya.finals.rankingservice.Entity.Rank;
 import kz.saya.finals.rankingservice.Entity.RankingLink;
 import kz.saya.finals.rankingservice.Entity.Skill;
 import kz.saya.finals.rankingservice.Repository.RankingLinkRepository;
@@ -84,4 +85,11 @@ public class RankService {
     }
 
 
+    public List<Rank> getRanks(UUID id) {
+        List<RankingLink> playerRankingLinks = rankingLinkRepository.findByPlayerProfileId(id);
+        if (playerRankingLinks.isEmpty()) {
+            return List.of();
+        }
+        return playerRankingLinks.stream().map(RankingLink::getRank).collect(Collectors.toList());
+    }
 }
