@@ -7,6 +7,7 @@ import kz.saya.finals.common.DTOs.Scrim.ScrimEndedDTO;
 import kz.saya.finals.common.DTOs.Scrim.ScrimRequestDto;
 import kz.saya.finals.feigns.Clients.GameServiceClient;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
+import kz.saya.finals.feigns.Clients.RankingServiceClient;
 import kz.saya.finals.feigns.Clients.UserServiceClient;
 import kz.saya.finals.scrimservice.Entities.Scrim;
 import kz.saya.finals.scrimservice.Entities.ScrimResults;
@@ -45,6 +46,7 @@ public class ScrimService {
     private final TabInfoRepository tabInfoRepository;
     private final ScrimResultsRepository scrimResultsRepository;
     private final GameServiceClient gameServiceClient;
+    private final RankingServiceClient rankingServiceClient;
 
     @Autowired
     public ScrimService(ScrimRepository scrimRepository,
@@ -52,13 +54,14 @@ public class ScrimService {
                         GamerProfileServiceClient gamerProfileServiceClient,
                         TabInfoRepository tabInfoRepository,
                         ScrimResultsRepository scrimResultsRepository,
-                        GameServiceClient gameServiceClient) {
+                        GameServiceClient gameServiceClient, RankingServiceClient rankingServiceClient) {
         this.scrimRepository = scrimRepository;
         this.userServiceClient = userServiceClient;
         this.gamerProfileServiceClient = gamerProfileServiceClient;
         this.tabInfoRepository = tabInfoRepository;
         this.scrimResultsRepository = scrimResultsRepository;
         this.gameServiceClient = gameServiceClient;
+        this.rankingServiceClient = rankingServiceClient;
     }
 
     // ---------------------------------------------------------------------
@@ -81,6 +84,8 @@ public class ScrimService {
         scrim.setStarted(false);                 // lobby is open until start()
         scrim.setCreatorId(creator.getId());
         scrim.setCreatorName(creator.getNickname());
+        System.out.println(dto);
+        scrim.setRanked(dto.isRanked());
         scrim.setPlayerList(new ArrayList<>(List.of(creator.getId())));
 
         return mapToDto(scrimRepository.save(scrim));
@@ -220,6 +225,9 @@ public class ScrimService {
         scrimResults.setLDeaths(lDeaths);
         scrimResults.setLAssists(lAssists);
         scrimResultsRepository.save(scrimResults);
+        scrim.setEnded(true);
+        scrim = scrimRepository.save(scrim);
+        rankingServiceClient.proceedResults(scrim.getId());
     }
 
 
@@ -260,7 +268,8 @@ public class ScrimService {
                 .setScrimType(scrim.getScrimType())
                 .setCreatorId(scrim.getCreatorId())
                 .setCreatorName(scrim.getCreatorName())
-                .setStarted(scrim.isStarted());
+                .setStarted(scrim.isStarted())
+                .setRanked(scrim.isRanked());
     }
 
     private UUID getMvp(List<ScrimEndedDTO.PlayerResult> results) {

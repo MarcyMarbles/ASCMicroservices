@@ -16,5 +16,5 @@ public class ScrimRequestDto {
     private String name; // Название скрима
     private UUID gameId; // ID игры
     private ScrimType scrimType; // Тип скрима (Solo, Duo, Squad)
-    private boolean isRanked;
+    private boolean ranked;
 }

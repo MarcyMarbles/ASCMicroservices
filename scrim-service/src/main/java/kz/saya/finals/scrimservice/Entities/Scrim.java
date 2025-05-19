@@ -34,7 +34,7 @@ public class Scrim extends MappedSuperClass {
     private UUID creatorId; // ID создателя скрима
     private String creatorName; // Имя создателя скрима
     private boolean started; // Начался ли скрим
-    private boolean ended;
+    private boolean ended = false;
     private boolean ranked;
 
 

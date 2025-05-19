@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/scrims/{scrimId}/results")
+@RequestMapping("/api/scrims/{scrimId}/scrim-results")
 public class ScrimResultsController {
 
     private final ScrimResultsService resultsService;
