@@ -7,8 +7,6 @@ import kz.saya.finals.common.DTOs.Scrim.ScrimEndedDTO;
 import kz.saya.finals.common.DTOs.Scrim.ScrimRequestDto;
 import kz.saya.finals.feigns.Clients.GameServiceClient;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
-import kz.saya.finals.feigns.Clients.RankingServiceClient;
-import kz.saya.finals.feigns.Clients.UserServiceClient;
 import kz.saya.finals.scrimservice.Entities.Scrim;
 import kz.saya.finals.scrimservice.Entities.ScrimResults;
 import kz.saya.finals.scrimservice.Entities.TabInfo;
@@ -41,27 +39,25 @@ import java.util.stream.Collectors;
 public class ScrimService {
 
     private final ScrimRepository scrimRepository;
-    private final UserServiceClient userServiceClient;
     private final GamerProfileServiceClient gamerProfileServiceClient;
     private final TabInfoRepository tabInfoRepository;
     private final ScrimResultsRepository scrimResultsRepository;
     private final GameServiceClient gameServiceClient;
-    private final RankingServiceClient rankingServiceClient;
+    private final RankingService rankingService;
 
     @Autowired
     public ScrimService(ScrimRepository scrimRepository,
-                        UserServiceClient userServiceClient,
                         GamerProfileServiceClient gamerProfileServiceClient,
                         TabInfoRepository tabInfoRepository,
                         ScrimResultsRepository scrimResultsRepository,
-                        GameServiceClient gameServiceClient, RankingServiceClient rankingServiceClient) {
+                        GameServiceClient gameServiceClient,
+                        RankingService rankingService) {
         this.scrimRepository = scrimRepository;
-        this.userServiceClient = userServiceClient;
         this.gamerProfileServiceClient = gamerProfileServiceClient;
         this.tabInfoRepository = tabInfoRepository;
         this.scrimResultsRepository = scrimResultsRepository;
         this.gameServiceClient = gameServiceClient;
-        this.rankingServiceClient = rankingServiceClient;
+        this.rankingService = rankingService;
     }
 
     // ---------------------------------------------------------------------
@@ -183,6 +179,7 @@ public class ScrimService {
         int kills = 0, deaths = 0, assists = 0;
         int lKills = 0, lDeaths = 0, lAssists = 0;
         UUID mvpId = null;
+        List<TabInfo> tabInfos = new ArrayList<>();
 
         for (Map.Entry<UUID, List<ScrimEndedDTO.PlayerResult>> entry : dto.getTeamPlayerResult().entrySet()) {
             UUID teamId = entry.getKey();
@@ -213,7 +210,8 @@ public class ScrimService {
                 tab.setAssists(pr.getAssists());
                 tab.setDeaths(pr.getDeaths());
                 tab.setScore(pr.getScore());
-                tabInfoRepository.save(tab);
+                tab.setScrim(scrim);
+                tabInfos.add(tabInfoRepository.save(tab));
             }
             mvpId = getMvp(results);
         }
@@ -232,7 +230,7 @@ public class ScrimService {
         scrim.setEnded(true);
         scrim = scrimRepository.save(scrim);
         if (scrim.isRanked()) {
-            rankingServiceClient.proceedResults(scrim.getId());
+            rankingService.processResults(scrim, scrimResults, tabInfos);
         }
     }
 
@@ -248,6 +246,7 @@ public class ScrimService {
         if (!scrim.getCreatorId().equals(gamer.getId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only creator can end scrim");
         }
+        List<TabInfo> tabInfos = new ArrayList<>();
         for (Map.Entry<UUID, ScrimEndedDTO.PlayerResult> entry : dto.getNonTeamPlayerResult().entrySet()) {
             UUID playerId = entry.getKey();
             ScrimEndedDTO.PlayerResult pr = entry.getValue();
@@ -262,7 +261,8 @@ public class ScrimService {
             tab.setAssists(pr.getAssists());
             tab.setDeaths(pr.getDeaths());
             tab.setScore(pr.getScore());
-            tabInfoRepository.save(tab);
+            tab.setScrim(scrim);
+            tabInfos.add(tabInfoRepository.save(tab));
         }
         // MVP doesn't really matter when there is only one player winning
 
@@ -273,7 +273,7 @@ public class ScrimService {
         scrim.setEnded(true);
         scrim = scrimRepository.save(scrim);
         if (scrim.isRanked()) {
-            rankingServiceClient.proceedResults(scrim.getId());
+            rankingService.processResults(scrim, scrimResults, tabInfos);
         }
     }
 

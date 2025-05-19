@@ -42,7 +42,12 @@ public class RankService {
 
             Skill skill = skillRepository.findByPlayerIdAndGameId(playerId, scrimDto.getGameId());
 
-            boolean isWin = tabInfo.getTeamId().equals(scrimResultsDto.getWinnerId());
+            boolean isWin = false;
+            if (tabInfo.getTeamId() == null) {
+                isWin = scrimResultsDto.getWinnerId().equals(playerId);
+            } else {
+                isWin = tabInfo.getTeamId().equals(scrimResultsDto.getWinnerId());
+            }
             double kdr = (double) tabInfo.getKills() / Math.max(tabInfo.getDeaths(), 1);
 
             if (skill == null) {

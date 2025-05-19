@@ -10,6 +10,7 @@ public class ScrimResultMapper {
         return new ScrimResultsDto()
                 .setId(resultsDto.getId())
                 .setScrimId(resultsDto.getScrim().getId())
+                .setWinnerId(resultsDto.getWinnerId())
                 .setKills(resultsDto.getKills())
                 .setAssists(resultsDto.getAssists())
                 .setDeaths(resultsDto.getDeaths())

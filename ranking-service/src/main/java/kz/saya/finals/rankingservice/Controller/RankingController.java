@@ -4,6 +4,7 @@ import kz.saya.finals.common.DTOs.Auth.UserDTO;
 import kz.saya.finals.common.DTOs.Profile.GamerProfileDto;
 import kz.saya.finals.common.DTOs.Scrim.ScrimDto;
 import kz.saya.finals.common.DTOs.Scrim.ScrimResultsDto;
+import kz.saya.finals.common.DTOs.Scrim.ScrimToRankDTO;
 import kz.saya.finals.common.DTOs.Scrim.TabInfoDto;
 import kz.saya.finals.feigns.Clients.GamerProfileServiceClient;
 import kz.saya.finals.feigns.Clients.ScrimServiceClient;
@@ -36,28 +37,25 @@ public class RankingController {
     }
 
     @PostMapping("/game/results")
-    public ResponseEntity<?> proceedResults(@RequestParam UUID scrimId) {
+    public ResponseEntity<?> proceedResults(@RequestBody ScrimToRankDTO dto) {
         GamerProfileDto gamerProfileDto = getCurrentGamerProfile();
         UserDTO userDTO = getUserFromAuth();
-        ScrimDto scrimDto = scrimServiceClient.get(scrimId);
-        if (scrimDto == null) {
-            return ResponseEntity.badRequest().body("Scrim not found");
-        }
+        ScrimDto scrimDto = dto.getScrimDto();
         if (!scrimDto.getCreatorId().equals(gamerProfileDto.getId()) && !userDTO.getRoles().contains("ROLE_ADMIN")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("You are not allowed to process this scrim’s results");
         }
 
-        ScrimResultsDto scrimResultsDto = scrimServiceClient.getResults(scrimId);
+        ScrimResultsDto scrimResultsDto = dto.getScrimResultsDto();
         if (scrimResultsDto == null) {
             return ResponseEntity.badRequest().body("Scrim is not ended properly");
         }
-        List<TabInfoDto> tabInfoDtos = scrimServiceClient.getTabInfo(scrimId);
+        List<TabInfoDto> tabInfoDtos = dto.getTabInfoDtos();
         if (tabInfoDtos == null || tabInfoDtos.isEmpty()) {
             return ResponseEntity.badRequest().body("Scrim is not ended properly");
         }
         rankService.proceedResults(scrimDto, scrimResultsDto, tabInfoDtos);
-        return ResponseEntity.ok("Results processed successfully");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping
